@@ -1,3 +1,6 @@
+// This file drives the game
+
+// neccesary Amethest imports
 use amethyst::{
     core::transform::TransformBundle,
     prelude::*,
@@ -9,11 +12,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-struct MyState;
-
-impl SimpleState for MyState {
-    fn on_start(&mut self, _data: StateData<'_, GameData<'_, '_>>) {}
-}
+mod state;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -24,6 +23,7 @@ fn main() -> amethyst::Result<()> {
     let config_dir = app_root.join("config");
     let display_config_path = config_dir.join("display.ron");
 
+    
     let game_data = GameDataBuilder::default()
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
@@ -35,7 +35,7 @@ fn main() -> amethyst::Result<()> {
         )?
         .with_bundle(TransformBundle::new())?;
 
-    let mut game = Application::new(assets_dir, MyState, game_data)?;
+    let mut game = Application::new(assets_dir, state::Test, game_data)?;
     game.run();
 
     Ok(())

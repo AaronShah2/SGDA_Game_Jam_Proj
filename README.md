@@ -8,6 +8,6 @@ Project built for 2020 SGDA Game Jam.
     Follow this installation guide: https://book.amethyst.rs/stable/getting-started.html
 
 # Credits
-- Jared Allen
+- Jarred Allen
 - Aaron Shah
 - Mingwei Hung

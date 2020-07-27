@@ -9,8 +9,10 @@ use amethyst::{
 pub struct UiPrefabRegistry {
     prefabs: Vec<Handle<UiPrefab>>,
 }
-impl UiPrefabRegistry {
-    pub fn find(&self, world: &World, name: &str) -> Option<Handle<UiPrefab>> {
+impl super::ResourceRegistry for UiPrefabRegistry {
+    type ResourceType = Handle<UiPrefab>;
+
+    fn find(&self, world: &World, name: &str) -> Option<Self::ResourceType> {
         let storage = world.read_resource::<AssetStorage<UiPrefab>>();
         self.prefabs.iter().find_map(|handle| {
             if storage
@@ -29,31 +31,9 @@ impl UiPrefabRegistry {
             }
         })
     }
-
-    pub fn print_prefabs(&self, world: &World) {
-        let storage = world.read_resource::<AssetStorage<UiPrefab>>();
-        self.prefabs
-            .iter()
-            .filter_map(|handle| {
-                Some(
-                    &storage
-                        .get(handle)?
-                        .entities()
-                        .next()?
-                        .data()?
-                        .0
-                        .as_ref()?
-                        .id,
-                )
-            })
-            .for_each(|name| print!("{} ", name));
-        println!();
-    }
 }
 
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
-    use std::fs::read_dir;
-
     let mut counter = ProgressCounter::new();
     // Load UI Prefabs
     {
@@ -63,7 +43,7 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             .join("assets")
             .join("prefabs")
             .join("ui");
-        let prefab_iter = read_dir(prefab_path.to_str().unwrap()).unwrap();
+        let prefab_iter = std::fs::read_dir(prefab_path.to_str().unwrap()).unwrap();
         reg.prefabs = prefab_iter
             .filter_map(|entry| {
                 if let Ok(file) = entry {
@@ -83,6 +63,6 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             })
             .collect();
         world.insert(reg);
+        counter
     }
-    counter
 }

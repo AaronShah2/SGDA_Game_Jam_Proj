@@ -1,31 +1,38 @@
 // neccesary imports
 use amethyst::{
-    assets::{AssetStorage, Handle, Loader}, // assets?
-    core::transform::Transform,             // position?
+    assets::Handle,                                                    // assets?
+    core::transform::Transform,                                        // position?
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture}, // graphics & rendering tools?
-    window::ScreenDimensions, // resolution?
+    renderer::{Camera, SpriteRender, SpriteSheet}, // graphics & rendering tools?
+    window::ScreenDimensions,                      // resolution?
 };
+
+use crate::resources::{sprites::SpriteSheetRegister, ResourceRegistry};
 
 use log::info;
 
 /// Testing game state
+#[derive(Default)]
 pub struct Test;
+
+const SHEET_ID: &str = "test-1";
 
 impl SimpleState for Test {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        let world = data.world;
-
         // Screen dimmensions to initialize Camera
-        let dimensions = (*world.read_resource::<ScreenDimensions>()).clone();
+        let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();
 
         // Place the camera
-        init_camera(world, &dimensions);
+        init_camera(data.world, &dimensions);
 
         // Load our sprites and display them
-        let sprites = load_sprite_sheet(world, "test-1", "jpeg");
-        init_sprites(world, sprites.clone(), &dimensions);
+        let sprites = &data
+            .world
+            .read_resource::<SpriteSheetRegister>()
+            .find(&data.world, SHEET_ID)
+            .expect("Couldn't load sprite sheet");
+        init_sprites(data.world, sprites.clone(), &dimensions);
     }
 
     /// The following events are handled:
@@ -68,33 +75,6 @@ fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
         .with(Camera::standard_2d(dimensions.width(), dimensions.height())) // creates 2d Camera centered on screen
         .with(transform) // updates camera postion to be centered on screen
         .build();
-}
-
-/// Loads a SpriteSheet with the given name and extension, and the
-/// corresponding .ron file to interpret it.
-///
-/// Name should be a relative path from the sprite directory.
-fn load_sprite_sheet(world: &mut World, name: &str, ext: &str) -> Handle<SpriteSheet> {
-    // Load the texture for our sprites. We'll later need to
-    // add a handle to this texture to our `SpriteRender`s, so
-    // we need to keep a reference to it.
-    let loader = world.read_resource::<Loader>();
-    let texture_handle = {
-        let texture_storage = world.read_resource::<AssetStorage<Texture>>();
-        loader.load(
-            format!("sprites/{}.{}", name, ext),
-            ImageFormat::default(),
-            (),
-            &texture_storage,
-        )
-    };
-    let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
-    loader.load(
-        format!("sprites/{}.ron", name),
-        SpriteSheetFormat(texture_handle),
-        (),
-        &sprite_sheet_store,
-    )
 }
 
 fn init_sprites(world: &mut World, sheet: Handle<SpriteSheet>, dimensions: &ScreenDimensions) {

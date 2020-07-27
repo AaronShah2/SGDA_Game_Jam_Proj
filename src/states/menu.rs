@@ -1,4 +1,4 @@
-use crate::resources::prefabs;
+use crate::resources::{prefabs::UiPrefabRegistry, ResourceRegistry};
 use amethyst::{ecs::Entity, prelude::*, ui::UiFinder};
 
 const MENU: &str = "menu";
@@ -16,7 +16,7 @@ impl SimpleState for MenuState {
         println!("Creating the menu");
         let menu = data
             .world
-            .read_resource::<prefabs::UiPrefabRegistry>()
+            .read_resource::<UiPrefabRegistry>()
             .find(data.world, MENU)
             .expect("Couldn't load menu prefab");
         self.root_entity = Some(data.world.create_entity().with(menu).build());

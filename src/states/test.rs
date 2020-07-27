@@ -1,5 +1,3 @@
-//! This file manages the state of the game
-
 // neccesary imports
 use amethyst::{
     assets::{AssetStorage, Handle, Loader}, // assets?
@@ -58,7 +56,6 @@ impl SimpleState for Test {
         // Keep going
         Trans::None
     }
-
 }
 
 /// Creates Camera in world
@@ -102,6 +99,7 @@ fn load_sprite_sheet(world: &mut World, name: &str, ext: &str) -> Handle<SpriteS
 }
 
 fn init_sprites(world: &mut World, sheet: Handle<SpriteSheet>, dimensions: &ScreenDimensions) {
+    // Bounds are currently hard-coded
     for i in 0..1 {
         // Center our sprites around the center of the window
         let x = (i as f32 - 1.) * 100. + dimensions.width() * 0.5;

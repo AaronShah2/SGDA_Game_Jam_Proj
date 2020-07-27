@@ -43,6 +43,7 @@ impl SimpleState for LoadingState {
             }
             self.counters.clear();
             Trans::Switch(Box::new(MenuState::default()))
+        // Trans::Switch(Box::new(super::Test::default()))
         } else {
             Trans::None
         }

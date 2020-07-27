@@ -22,13 +22,21 @@ impl SpriteSheetRegister {
         self.sprite_sheets
             .get(name)
             .cloned()
-            .map_or(None, |sprite_sheet| if world.read_resource::<AssetStorage<SpriteSheet>>().get(&sprite_sheet)?.sprites.len() <= index {
-                None
-            } else {
-                Some(SpriteRender {
-                    sprite_sheet,
-                    sprite_number: index,
-                })
+            .and_then(|sprite_sheet| {
+                if world
+                    .read_resource::<AssetStorage<SpriteSheet>>()
+                    .get(&sprite_sheet)?
+                    .sprites
+                    .len()
+                    <= index
+                {
+                    None
+                } else {
+                    Some(SpriteRender {
+                        sprite_sheet,
+                        sprite_number: index,
+                    })
+                }
             })
     }
 }

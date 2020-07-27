@@ -1,7 +1,7 @@
 use crate::resources::{prefabs::UiPrefabRegistry, ResourceRegistry};
 use amethyst::{ecs::Entity, prelude::*, ui::UiFinder};
 
-const MENU: &str = "menu";
+const MENU_ID: &str = "menu";
 
 #[derive(Default)]
 pub struct MenuState {
@@ -13,18 +13,22 @@ pub struct MenuState {
 
 impl SimpleState for MenuState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        println!("Creating the menu");
-        let menu = data
+        let menu_prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
-            .find(data.world, MENU)
+            .find(data.world, MENU_ID)
             .expect("Couldn't load menu prefab");
-        self.root_entity = Some(data.world.create_entity().with(menu).build());
+        self.root_entity = Some(data.world.create_entity().with(menu_prefab).build());
         data.data.update(&data.world);
         data.world.exec(|ui_finder: UiFinder<'_>| {
             self.start_button = ui_finder.find("start");
             self.options_button = ui_finder.find("controls");
             self.exit_button = ui_finder.find("exit");
         });
+    }
+
+    fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
+        data.data.update(&data.world);
+        Trans::None
     }
 }

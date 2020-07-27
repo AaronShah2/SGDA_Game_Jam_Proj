@@ -1,10 +1,10 @@
 // neccesary imports
 use amethyst::{
-    core::transform::Transform,                                        // position?
+    core::transform::Transform, // position?
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-    renderer::Camera, // graphics & rendering tools?
-    window::ScreenDimensions,                      // resolution?
+    renderer::Camera,         // graphics & rendering tools?
+    window::ScreenDimensions, // resolution?
 };
 
 use crate::resources::sprites::SpriteSheetRegister;
@@ -84,7 +84,10 @@ fn init_sprites(world: &mut World, dimensions: &ScreenDimensions) {
         // well as the transform. If you want to add behaviour to your sprites,
         // you'll want to add a custom `Component` that will identify them, and a
         // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
-        let sprite_render = world.read_resource::<SpriteSheetRegister>().find_sprite(world, SHEET_ID, i).expect("Couldn't load sprite");
+        let sprite_render = world
+            .read_resource::<SpriteSheetRegister>()
+            .find_sprite(world, SHEET_ID, i)
+            .expect("Couldn't load sprite");
         world
             .create_entity()
             .with(sprite_render)

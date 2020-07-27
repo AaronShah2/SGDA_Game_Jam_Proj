@@ -1,12 +1,6 @@
-use crate::{
-    resources::prefabs::initialize_prefabs,
-    states::MenuState,
-};
+use crate::{resources::prefabs::initialize_prefabs, states::MenuState};
 
-use amethyst::{
-    assets::ProgressCounter,
-    prelude::*,
-};
+use amethyst::{assets::ProgressCounter, prelude::*};
 
 #[derive(Default)]
 pub struct LoadingState {
@@ -32,13 +26,16 @@ impl SimpleState for LoadingState {
                 Complete => {
                     self.prefab_progress = None;
                     return Trans::Switch(Box::new(MenuState::default()));
-                },
+                }
                 Failed => {
-                    panic!("Some prefabs have failed :(\n\nErrors:\n{:#?}", counter.errors());
-                },
-                Loading => {},
+                    panic!(
+                        "Some prefabs have failed :(\n\nErrors:\n{:#?}",
+                        counter.errors()
+                    );
+                }
+                Loading => {}
             }
         }
-        return Trans::None;
+        Trans::None
     }
 }

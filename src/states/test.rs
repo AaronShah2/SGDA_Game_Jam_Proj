@@ -1,7 +1,7 @@
 // neccesary imports
 use amethyst::{
     assets::{AssetStorage, Handle, Loader}, // assets?
-    core::transform::Transform, // position?
+    core::transform::Transform,             // position?
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture}, // graphics & rendering tools?
@@ -14,7 +14,6 @@ use log::info;
 pub struct Test;
 
 impl SimpleState for Test {
-
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
@@ -113,7 +112,10 @@ fn init_sprites(world: &mut World, sheet: Handle<SpriteSheet>, dimensions: &Scre
         // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
         world
             .create_entity()
-            .with(SpriteRender { sprite_sheet: sheet.clone(), sprite_number: i })
+            .with(SpriteRender {
+                sprite_sheet: sheet.clone(),
+                sprite_number: i,
+            })
             .with(transform)
             .build();
     }

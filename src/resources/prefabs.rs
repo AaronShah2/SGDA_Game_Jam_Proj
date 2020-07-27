@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{AssetStorage, Handle, Prefab, PrefabLoader, ProgressCounter, RonFormat},
+    assets::{AssetStorage, Handle, ProgressCounter},
     ecs::prelude::{World, WorldExt},
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
@@ -13,7 +13,16 @@ impl UiPrefabRegistry {
     pub fn find(&self, world: &World, name: &str) -> Option<Handle<UiPrefab>> {
         let storage = world.read_resource::<AssetStorage<UiPrefab>>();
         self.prefabs.iter().find_map(|handle| {
-            if storage.get(handle)?.entities().next()?.data()?.0.as_ref()?.id == name {
+            if storage
+                .get(handle)?
+                .entities()
+                .next()?
+                .data()?
+                .0
+                .as_ref()?
+                .id
+                == name
+            {
                 Some(handle.clone())
             } else {
                 None
@@ -25,7 +34,18 @@ impl UiPrefabRegistry {
         let storage = world.read_resource::<AssetStorage<UiPrefab>>();
         self.prefabs
             .iter()
-            .filter_map(|handle| Some(&storage.get(handle)?.entities().next()?.data()?.0.as_ref()?.id))
+            .filter_map(|handle| {
+                Some(
+                    &storage
+                        .get(handle)?
+                        .entities()
+                        .next()?
+                        .data()?
+                        .0
+                        .as_ref()?
+                        .id,
+                )
+            })
             .for_each(|name| print!("{} ", name));
         println!();
     }
@@ -49,13 +69,11 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                 if let Ok(file) = entry {
                     let file = file.path();
                     let filename = file.to_str()?;
-                    if file.extension().map_or(false, |s| s.to_str() == Some("ron")) {
-                        Some(world.exec(|loader: UiLoader<'_>| {
-                            loader.load(
-                                filename,
-                                &mut counter,
-                            )
-                        }))
+                    if file
+                        .extension()
+                        .map_or(false, |s| s.to_str() == Some("ron"))
+                    {
+                        Some(world.exec(|loader: UiLoader<'_>| loader.load(filename, &mut counter)))
                     } else {
                         None
                     }

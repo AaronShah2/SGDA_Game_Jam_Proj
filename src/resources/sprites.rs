@@ -1,7 +1,7 @@
 pub use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
     prelude::*,
-    renderer::{ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
+    renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     utils::application_root_dir,
 };
 use std::collections::HashMap;
@@ -15,6 +15,21 @@ impl super::ResourceRegistry for SpriteSheetRegister {
 
     fn find(&self, _: &World, name: &str) -> Option<Self::ResourceType> {
         self.sprite_sheets.get(name).cloned()
+    }
+}
+impl SpriteSheetRegister {
+    pub fn find_sprite(&self, world: &World, name: &str, index: usize) -> Option<SpriteRender> {
+        self.sprite_sheets
+            .get(name)
+            .cloned()
+            .map_or(None, |sprite_sheet| if world.read_resource::<AssetStorage<SpriteSheet>>().get(&sprite_sheet)?.sprites.len() <= index {
+                None
+            } else {
+                Some(SpriteRender {
+                    sprite_sheet,
+                    sprite_number: index,
+                })
+            })
     }
 }
 

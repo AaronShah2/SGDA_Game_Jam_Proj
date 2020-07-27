@@ -1,14 +1,13 @@
 // neccesary imports
 use amethyst::{
-    assets::Handle,                                                    // assets?
     core::transform::Transform,                                        // position?
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-    renderer::{Camera, SpriteRender, SpriteSheet}, // graphics & rendering tools?
+    renderer::Camera, // graphics & rendering tools?
     window::ScreenDimensions,                      // resolution?
 };
 
-use crate::resources::{sprites::SpriteSheetRegister, ResourceRegistry};
+use crate::resources::sprites::SpriteSheetRegister;
 
 use log::info;
 
@@ -26,13 +25,8 @@ impl SimpleState for Test {
         // Place the camera
         init_camera(data.world, &dimensions);
 
-        // Load our sprites and display them
-        let sprites = &data
-            .world
-            .read_resource::<SpriteSheetRegister>()
-            .find(&data.world, SHEET_ID)
-            .expect("Couldn't load sprite sheet");
-        init_sprites(data.world, sprites.clone(), &dimensions);
+        // Place sprites
+        init_sprites(data.world, &dimensions);
     }
 
     /// The following events are handled:
@@ -77,7 +71,7 @@ fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
         .build();
 }
 
-fn init_sprites(world: &mut World, sheet: Handle<SpriteSheet>, dimensions: &ScreenDimensions) {
+fn init_sprites(world: &mut World, dimensions: &ScreenDimensions) {
     // Bounds are currently hard-coded
     for i in 0..1 {
         // Center our sprites around the center of the window
@@ -90,12 +84,10 @@ fn init_sprites(world: &mut World, sheet: Handle<SpriteSheet>, dimensions: &Scre
         // well as the transform. If you want to add behaviour to your sprites,
         // you'll want to add a custom `Component` that will identify them, and a
         // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
+        let sprite_render = world.read_resource::<SpriteSheetRegister>().find_sprite(world, SHEET_ID, i).expect("Couldn't load sprite");
         world
             .create_entity()
-            .with(SpriteRender {
-                sprite_sheet: sheet.clone(),
-                sprite_number: i,
-            })
+            .with(sprite_render)
             .with(transform)
             .build();
     }

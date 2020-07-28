@@ -2,7 +2,7 @@
 
 use crate::{
     resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
-    states::{Test, Gameplay, OptionsState},
+    states::{GameplayState, OptionsState},
 };
 use amethyst::{
     core::transform::ParentHierarchy,
@@ -29,7 +29,7 @@ impl SimpleState for MenuState {
             StateEvent::Ui(UiEvent { event_type: UiEventType::Click, target, }) => {
                 if self.start_button.map_or(false, |button| button == target) {
                     // Start Button: Transitions to next scene
-                    Trans::Push(Box::new(Gameplay::default()))
+                    Trans::Push(Box::new(GameplayState::default()))
                 } else if self.options_button.map_or(false, |button| button == target) {
                     // Options Button: Transition to options screen
                     Trans::Push(Box::new(OptionsState::default()))

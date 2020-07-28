@@ -13,11 +13,11 @@ use log::info;
 
 /// Testing game state
 #[derive(Default)]
-pub struct Gameplay;
+pub struct GameplayState;
 
 const SHEET_ID: &str = "Gamer";
 
-impl SimpleState for Gameplay {
+impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         // Screen dimmensions to initialize Camera
         let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();
@@ -87,7 +87,7 @@ fn init_sprites(world: &mut World, dimensions: &ScreenDimensions) {
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, SHEET_ID, i)
-            .expect("Couldn't load sprite");
+            .expect(format!("Couldn't load sprite #{} on sheet {}.", i, SHEET_ID).as_str());
         world
             .create_entity()
             .with(sprite_render)

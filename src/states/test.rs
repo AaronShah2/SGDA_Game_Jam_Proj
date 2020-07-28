@@ -13,11 +13,11 @@ use log::info;
 
 /// Testing game state
 #[derive(Default)]
-pub struct Test;
+pub struct TestState;
 
 const SHEET_ID: &str = "test-1";
 
-impl SimpleState for Test {
+impl SimpleState for TestState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         // Screen dimmensions to initialize Camera
         let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();

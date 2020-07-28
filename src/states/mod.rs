@@ -9,5 +9,5 @@ mod gameplay;
 pub use loading::LoadingState;
 pub use menu::MenuState;
 pub use options::OptionsState;
-pub use test::Test;
-pub use gameplay::Gameplay;
+pub use test::TestState;
+pub use gameplay::GameplayState;

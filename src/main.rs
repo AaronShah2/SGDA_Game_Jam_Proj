@@ -33,6 +33,9 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(AudioBundle::default())?
+        // testing out key configures
+        .with(systems::TestSystem, "test_system", &["input_system"])
+
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

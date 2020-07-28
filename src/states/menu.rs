@@ -1,6 +1,8 @@
+// Creates Game Menu
+
 use crate::{
     resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
-    states::Test,
+    states::{Test, Gameplay},
 };
 use amethyst::{
     ecs::Entity,
@@ -10,6 +12,7 @@ use amethyst::{
 
 const MENU_ID: &str = "menu";
 
+// Menu struct that contains menu options
 #[derive(Default)]
 pub struct MenuState {
     start_button: Option<Entity>,
@@ -20,6 +23,7 @@ pub struct MenuState {
 
 impl SimpleState for MenuState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        // Variables that allow menu to be displayed and rendered
         let menu_prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
@@ -27,6 +31,8 @@ impl SimpleState for MenuState {
             .expect("Couldn't load menu prefab");
         self.root_entity = Some(data.world.create_entity().with(menu_prefab).build());
         data.data.update(&data.world);
+
+        // finds menu buttons and assigns them to variables
         data.world.exec(|ui_finder: UiFinder<'_>| {
             self.start_button = ui_finder.find("start");
             self.options_button = ui_finder.find("options");
@@ -34,15 +40,23 @@ impl SimpleState for MenuState {
         });
     }
 
+    // handles button presses
     fn handle_event(&mut self, _data: StateData<'_, GameData<'_, '_>>, event: StateEvent,) -> SimpleTrans {
         match event {
             StateEvent::Ui(UiEvent { event_type: UiEventType::Click, target, }) => {
                 if self.start_button.map_or(false, |button| button == target) {
-                    Trans::Push(Box::new(Test::default()))
+                    // Start Button: Transitions to next scene
+                    Trans::Push(Box::new(Gameplay::default()))
+
                 } else if self.options_button.map_or(false, |button| button == target) {
+                    // Options Button: NEEDS TO BE IMPLEMENTED
                     unimplemented!("Options aren't implemented yet :(")
+
                 } else if self.exit_button.map_or(false, |button| button == target) {
+                    // Exit Button: Quits Game
+                    // Quitting game causes error, possible bug?
                     Trans::Quit
+
                 } else {
                     Trans::None
                 }

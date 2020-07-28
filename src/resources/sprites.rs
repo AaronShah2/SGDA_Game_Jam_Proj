@@ -61,6 +61,8 @@ pub fn initialize_sprite_sheets(world: &mut World) -> ProgressCounter {
             Some((filename.to_string(), {
                 let loader = world.read_resource::<Loader>();
                 let texture_storage = world.read_resource::<AssetStorage<Texture>>();
+                let ron_filename = format!("sprites/{}.ron", filename);
+                std::fs::metadata(&ron_filename).ok()?;
                 let texture_handle = loader.load(
                     format!("sprites/{}.{}", filename, extension),
                     ImageFormat::default(),
@@ -69,7 +71,7 @@ pub fn initialize_sprite_sheets(world: &mut World) -> ProgressCounter {
                 );
                 let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
                 loader.load(
-                    format!("sprites/{}.ron", filename),
+                    &ron_filename,
                     SpriteSheetFormat(texture_handle),
                     &mut counter,
                     &sprite_sheet_store,

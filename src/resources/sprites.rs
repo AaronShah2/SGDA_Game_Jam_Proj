@@ -1,9 +1,10 @@
-pub use amethyst::{
+use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
     prelude::*,
     renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     utils::application_root_dir,
 };
+use log::warn;
 use std::collections::HashMap;
 
 #[derive(Default)]
@@ -21,23 +22,28 @@ impl SpriteSheetRegister {
     pub fn find_sprite(&self, world: &World, name: &str, index: usize) -> Option<SpriteRender> {
         self.sprite_sheets
             .get(name)
-            .cloned()
-            .and_then(|sprite_sheet| {
-                if world
-                    .read_resource::<AssetStorage<SpriteSheet>>()
-                    .get(&sprite_sheet)?
-                    .sprites
-                    .len()
-                    <= index
-                {
+            .map_or_else(
+                || {
+                    warn!("Tried to load sprite #{} from non-existant sheet {}.\nExisting sheets: {}", index, name, self.sprite_sheets.keys().cloned().collect::<Vec<_>>().join(", "));
                     None
-                } else {
-                    Some(SpriteRender {
-                        sprite_sheet,
-                        sprite_number: index,
-                    })
-                }
-            })
+                },
+                |sprite_sheet| {
+                    let sheet_length = world
+                        .read_resource::<AssetStorage<SpriteSheet>>()
+                        .get(&sprite_sheet)?
+                        .sprites
+                        .len();
+                    if index >= sheet_length {
+                        warn!("Tried to load sprite #{}/{} on sheet {}", index, sheet_length, name);
+                        None
+                    } else {
+                        Some(SpriteRender {
+                            sprite_sheet: sprite_sheet.clone(),
+                            sprite_number: index,
+                        })
+                    }
+                },
+            )
     }
 }
 
@@ -61,8 +67,7 @@ pub fn initialize_sprite_sheets(world: &mut World) -> ProgressCounter {
             Some((filename.to_string(), {
                 let loader = world.read_resource::<Loader>();
                 let texture_storage = world.read_resource::<AssetStorage<Texture>>();
-                let ron_filename = format!("sprites/{}.ron", filename);
-                std::fs::metadata(&ron_filename).ok()?;
+                std::fs::metadata(format!("assets/sprites/{}.ron", filename)).ok()?;
                 let texture_handle = loader.load(
                     format!("sprites/{}.{}", filename, extension),
                     ImageFormat::default(),
@@ -71,7 +76,7 @@ pub fn initialize_sprite_sheets(world: &mut World) -> ProgressCounter {
                 );
                 let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
                 loader.load(
-                    &ron_filename,
+                    format!("sprites/{}.ron", filename),
                     SpriteSheetFormat(texture_handle),
                     &mut counter,
                     &sprite_sheet_store,

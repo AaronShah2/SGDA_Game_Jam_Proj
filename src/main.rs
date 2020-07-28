@@ -28,8 +28,13 @@ fn main() -> amethyst::Result<()> {
     let config_dir = app_root.join("config");
     let display_config_path = config_dir.join("display.ron");
 
+    // adds key bindings & creates input handle
+    let bindings_config = config_dir.join("inputs.ron");
+    let input_bundle = InputBundle::<StringBindings>::new()
+        .with_bindings_from_file(bindings_config)?;
+    
     let game_data = GameDataBuilder::default()
-        .with_bundle(InputBundle::<StringBindings>::new())?
+        .with_bundle(input_bundle)?
         .with_bundle(TransformBundle::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(AudioBundle::default())?

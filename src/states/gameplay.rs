@@ -3,11 +3,17 @@ use amethyst::{
     core::transform::Transform, // position?
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode, InputEvent}, // input?
     prelude::*,
-    renderer::Camera,         // graphics & rendering tools?
+    renderer::{
+        Camera, Sprite, sprite::SpriteRender, SpriteSheet,
+        sprite::SpriteSheetHandle, Texture, SpriteSheetFormat, Transparent
+    },         // graphics & rendering tools?
     window::ScreenDimensions, // resolution?
 };
 
 use crate::resources::sprites::SpriteSheetRegister;
+
+//test out player controlls
+use crate::systems::Player;
 
 use log::info;
 
@@ -25,8 +31,8 @@ impl SimpleState for GameplayState {
         // Place the camera
         init_camera(data.world, &dimensions);
 
-        // Place sprites
-        init_sprites(data.world, &dimensions);
+        // Places play
+        init_player(data.world, &dimensions);
     }
 
     /// The following events are handled:
@@ -71,9 +77,10 @@ fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
         .build();
 }
 
-fn init_sprites(world: &mut World, dimensions: &ScreenDimensions) {
+fn init_player(world: &mut World, dimensions: &ScreenDimensions) {
     // Bounds are currently hard-coded
     for i in 0..1 {
+
         // Center our sprites around the center of the window
         let x = (i as f32 - 1.) * 100. + dimensions.width() * 0.5;
         let y = (i as f32 - 1.) * 100. + dimensions.height() * 0.5;
@@ -92,6 +99,7 @@ fn init_sprites(world: &mut World, dimensions: &ScreenDimensions) {
             .create_entity()
             .with(sprite_render)
             .with(transform)
+            .with(Player::new())
             .build();
     }
 }

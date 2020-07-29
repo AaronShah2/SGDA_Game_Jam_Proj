@@ -1,10 +1,11 @@
+#![enable(implicit_some)]
 Prefab(
     entities: [
         PrefabEntity(
-            data: Some(CharacterPrefab(
-                player: None,
-                enemy: Some(Enemy),
-            )),
+            data: CharacterPrefab(
+                enemy: Enemy,
+                position: TransformAdapterPrefab(pos2d: (0.0, 500.0), scale: 3.0),
+            ),
         ),
     ],
 )

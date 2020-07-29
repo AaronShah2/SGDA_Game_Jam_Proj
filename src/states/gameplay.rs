@@ -1,17 +1,13 @@
 // neccesary imports
 use amethyst::{
-    core::transform::Transform, // position?
     ecs::Entity,
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-    renderer::Camera,         // graphics & rendering tools?
-    window::ScreenDimensions, // resolution?
 };
 use crate::{
     resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
     utils::delete_hierarchy,
 };
-use nalgebra::Vector3;
 
 /// Testing game state
 #[derive(Default)]
@@ -25,11 +21,8 @@ const ENEMY_SHEET_ID: &str = "walkRight";
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        // Screen dimmensions to initialize Camera
-        let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();
-        // self.init_camera(data.world, &dimensions);
-        self.init_player(data.world, &dimensions);
-        self.init_enemy(data.world, Vector3::new(200.0, 450.0, 0.0));
+        self.init_player(data.world);
+        self.init_enemy(data.world);
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -70,27 +63,7 @@ impl SimpleState for GameplayState {
 }
 
 impl GameplayState {
-    #![allow(dead_code)]
-    /// Creates Camera in world
-    /// 'dimmensions' centers camera around screen
-    fn init_camera(&self, world: &mut World, dimensions: &ScreenDimensions) {
-        let mut transform = Transform::default();
-        transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.); // Centers Camera
-
-        world
-            .create_entity() // creates Camera entity?
-            .with(Camera::standard_2d(dimensions.width(), dimensions.height())) // creates 2d Camera centered on screen
-            .with(transform) // updates camera postion to be centered on screen
-            .build();
-    }
-
-    fn init_player(&mut self, world: &mut World, dimensions: &ScreenDimensions) {
-        // Center our sprites around the center of the window
-        // let x = dimensions.width() * 0.5;
-        // let y = dimensions.height() * 0.5;
-        // let mut transform = Transform::default();
-        // transform.set_translation_xyz(x, y, 0.);
-        // *transform.scale_mut() *= 0.25;
+    fn init_player(&mut self, world: &mut World) {
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, PLAYER_SHEET_ID, 0)
@@ -103,16 +76,12 @@ impl GameplayState {
             world
                 .create_entity()
                 .with(sprite_render)
-                // .with(transform)
                 .with(player_prefab)
                 .build(),
         );
     }
 
-    fn init_enemy(&mut self, world:&mut World, position: Vector3<f32>) {
-        let mut transform = Transform::default();
-        transform.set_translation(position);
-        *transform.scale_mut() *= 3.0;
+    fn init_enemy(&mut self, world:&mut World) {
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, ENEMY_SHEET_ID, 0)
@@ -125,7 +94,6 @@ impl GameplayState {
             world
                 .create_entity()
                 .with(sprite_render)
-                .with(transform)
                 .with(enemy_prefab)
                 .build(),
         );

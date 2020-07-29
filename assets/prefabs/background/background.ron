@@ -1,0 +1,10 @@
+#![enable(implicit_some)]
+Prefab(
+    entities: [
+        PrefabEntity(
+            data: BackgroundPrefab(
+                position: TransformAdapterPrefab(pos2d: (0.0, 0.0), scale: 3.0),
+            )
+        ),
+    ],
+)

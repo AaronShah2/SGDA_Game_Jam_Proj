@@ -109,8 +109,29 @@ pub struct CharacterPrefab {
 pub struct CharacterPrefabRegistry {
     prefabs: HashMap<String, Handle<Prefab<CharacterPrefab>>>,
 }
+
 impl super::ResourceRegistry for CharacterPrefabRegistry {
     type ResourceType = Handle<Prefab<CharacterPrefab>>;
+
+    fn find(&self, _: &World, name: &str) -> Option<Self::ResourceType> {
+        self.prefabs.get(name).cloned()
+    }
+}
+
+// prefabs for background
+#[derive(Clone, Debug, Deserialize, PrefabData, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct BackgroundPrefab {
+    position: Option<TransformAdapterPrefab>,
+}
+
+#[derive(Default)]
+pub struct BackgroundPrefabRegistry {
+    prefabs: HashMap<String, Handle<Prefab<BackgroundPrefab>>>,
+}
+
+impl super::ResourceRegistry for BackgroundPrefabRegistry {
+    type ResourceType = Handle<Prefab<BackgroundPrefab>>;
 
     fn find(&self, _: &World, name: &str) -> Option<Self::ResourceType> {
         self.prefabs.get(name).cloned()
@@ -148,6 +169,40 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             .collect();
         world.insert(reg);
     }
+    // load background prefabs
+    {
+        let mut reg = BackgroundPrefabRegistry::default();
+        let prefab_path = application_root_dir()
+            .unwrap()
+            .join("assets")
+            .join("prefabs")
+            .join("background");
+        let prefab_iter = std::fs::read_dir(prefab_path.to_str().unwrap()).unwrap();
+        reg.prefabs = prefab_iter
+            .filter_map(|entry| {
+                if let Ok(file) = entry {
+                    let file = file.path();
+                    let filename = file.to_str()?;
+                    let filestem = file.file_stem()?.to_str()?.to_string();
+                    if file
+                        .extension()
+                        .map_or(false, |s| s.to_str() == Some("ron"))
+                    {
+                        Some((
+                            filestem,
+                            world.exec(|loader: PrefabLoader<'_, BackgroundPrefab>| {
+                                loader.load(filename, RonFormat, &mut counter)
+                            }),
+                        ))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            })
+            .collect();
+        world.insert(reg);
     // Load Character Prefabs
     {
         let mut reg = CharacterPrefabRegistry::default();
@@ -182,6 +237,7 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             })
             .collect();
         world.insert(reg);
+    }
     }
     counter
 }

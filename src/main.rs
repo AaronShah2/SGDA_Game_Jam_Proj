@@ -56,6 +56,11 @@ fn main() -> amethyst::Result<()> {
             "character_prefab_loader",
             &[],
         )
+        .with_system_desc(
+            PrefabLoaderSystemDesc::<resources::prefabs::BackgroundPrefab>::default(),
+            "background_prefab_loader",
+            &[],
+        )
         .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with(
             systems::EnemyMovementSystem,

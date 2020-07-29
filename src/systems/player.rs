@@ -1,5 +1,3 @@
-// File copied from api
-
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
@@ -12,9 +10,9 @@ use nalgebra::base::Vector3;
 const MOVE_SPEED: f32 = 10.0f32;
 
 #[derive(SystemDesc)]
-pub struct TestSystem;
+pub struct PlayerSystem;
 
-impl<'s> System<'s> for TestSystem {
+impl<'s> System<'s> for PlayerSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Player>,

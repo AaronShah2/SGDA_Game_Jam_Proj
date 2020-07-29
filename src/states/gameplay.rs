@@ -88,6 +88,7 @@ impl GameplayState {
         let y = dimensions.height() * 0.5;
         let mut transform = Transform::default();
         transform.set_translation_xyz(x, y, 0.);
+        *transform.scale_mut() *= 0.25;
 
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()

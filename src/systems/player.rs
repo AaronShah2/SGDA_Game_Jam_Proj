@@ -8,6 +8,7 @@ use amethyst::{
 use nalgebra::base::Vector3;
 
 const MOVE_SPEED: f32 = 10.0f32;
+const AREA_WIDTH: f32 = 600.0f32;
 
 #[derive(SystemDesc)]
 pub struct PlayerSystem;
@@ -29,6 +30,8 @@ impl<'s> System<'s> for PlayerSystem {
             let movement = Vector3::new(horizontal, vertical, 0.0f32);
             if movement.norm_squared() != 0.0 {
                 transform.prepend_translation(movement.normalize() * MOVE_SPEED);
+                transform.translation_mut().x =
+                    transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
             }
 
             // test function, need to remove

@@ -70,6 +70,7 @@ impl SimpleState for GameplayState {
 }
 
 impl GameplayState {
+    #![allow(dead_code)]
     /// Creates Camera in world
     /// 'dimmensions' centers camera around screen
     fn init_camera(&self, world: &mut World, dimensions: &ScreenDimensions) {
@@ -85,11 +86,11 @@ impl GameplayState {
 
     fn init_player(&mut self, world: &mut World, dimensions: &ScreenDimensions) {
         // Center our sprites around the center of the window
-        let x = dimensions.width() * 0.5;
-        let y = dimensions.height() * 0.5;
-        let mut transform = Transform::default();
-        transform.set_translation_xyz(x, y, 0.);
-        *transform.scale_mut() *= 0.25;
+        // let x = dimensions.width() * 0.5;
+        // let y = dimensions.height() * 0.5;
+        // let mut transform = Transform::default();
+        // transform.set_translation_xyz(x, y, 0.);
+        // *transform.scale_mut() *= 0.25;
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, PLAYER_SHEET_ID, 0)
@@ -102,7 +103,7 @@ impl GameplayState {
             world
                 .create_entity()
                 .with(sprite_render)
-                .with(transform)
+                // .with(transform)
                 .with(player_prefab)
                 .build(),
         );

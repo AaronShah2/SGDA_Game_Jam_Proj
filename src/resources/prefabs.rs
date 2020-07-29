@@ -1,8 +1,10 @@
 use crate::components::*;
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, ProgressCounter, RonFormat},
+    core::transform::Transform,
     derive::PrefabData,
-    ecs::{Entity, World, WorldExt},
+    ecs::{Entity, WriteStorage, World, WorldExt},
+    renderer::Camera,
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
     Error,
@@ -38,10 +40,65 @@ impl super::ResourceRegistry for UiPrefabRegistry {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CameraAdapterPrefab {
+    width: f32,
+    height: f32,
+}
+impl<'a> PrefabData<'a> for CameraAdapterPrefab {
+    type SystemData = WriteStorage<'a, Camera>;
+    type Result = ();
+
+    fn add_to_entity(
+            &self,
+            entity: Entity,
+            cameras: &mut Self::SystemData,
+            _entities: &[Entity],
+            _children: &[Entity],
+        ) -> Result<Self::Result, Error> {
+        cameras.insert(entity, Camera::standard_2d(self.width, self.height))?;
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TransformAdapterPrefab {
+    pos: Option<(f32, f32)>,
+    scale: Option<f32>,
+}
+
+impl<'a> PrefabData<'a> for TransformAdapterPrefab {
+    type SystemData = WriteStorage<'a, Transform>;
+    type Result = ();
+
+    fn add_to_entity(
+            &self,
+            entity: Entity,
+            transforms: &mut Self::SystemData,
+            _entities: &[Entity],
+            _children: &[Entity],
+        ) -> Result<Self::Result, Error> {
+        let mut transform = Transform::default();
+        if let Some((x, y)) = self.pos {
+            transform.set_translation_xyz(x, y, 0.0);
+        }
+        if let Some(scale) = self.scale {
+            *transform.scale_mut() *= scale;
+        }
+        transforms.insert(entity, transform)?;
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PrefabData, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct CharacterPrefab {
-    player: Option<Player>,
+    camera: Option<CameraAdapterPrefab>,
     enemy: Option<Enemy>,
+    player: Option<Player>,
+    position: Option<TransformAdapterPrefab>,
 }
 
 #[derive(Default)]

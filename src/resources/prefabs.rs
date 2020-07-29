@@ -65,7 +65,8 @@ impl<'a> PrefabData<'a> for CameraAdapterPrefab {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TransformAdapterPrefab {
-    pos: Option<(f32, f32)>,
+    pos2d: Option<(f32, f32)>,
+    pos3d: Option<(f32, f32, f32)>,
     scale: Option<f32>,
 }
 
@@ -81,8 +82,11 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
             _children: &[Entity],
         ) -> Result<Self::Result, Error> {
         let mut transform = Transform::default();
-        if let Some((x, y)) = self.pos {
+        if let Some((x, y)) = self.pos2d {
             transform.set_translation_xyz(x, y, 0.0);
+        }
+        if let Some((x, y, z)) = self.pos3d {
+            transform.set_translation_xyz(x, y, z);
         }
         if let Some(scale) = self.scale {
             *transform.scale_mut() *= scale;

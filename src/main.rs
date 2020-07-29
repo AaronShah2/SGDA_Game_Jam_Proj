@@ -56,7 +56,8 @@ fn main() -> amethyst::Result<()> {
             "character_prefab_loader",
             &[],
         )
-        .with(systems::TestSystem, "test_system", &["input_system"]);
+        .with(systems::PlayerSystem, "player_system", &["input_system"])
+        .with(systems::EnemyMovementSystem, "enemy_system", &["player_system"]);
 
     let mut game = Application::new(assets_dir, states::LoadingState::default(), game_data)?;
     game.run();

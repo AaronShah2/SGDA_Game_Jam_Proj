@@ -7,32 +7,29 @@ use amethyst::{
     renderer::Camera,         // graphics & rendering tools?
     window::ScreenDimensions, // resolution?
 };
-
 use crate::{
     resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
     utils::delete_hierarchy,
 };
-
-use log::info;
+use nalgebra::Vector3;
 
 /// Testing game state
 #[derive(Default)]
 pub struct GameplayState {
     player: Option<Entity>,
+    enemy: Option<Entity>,
 }
 
-const SHEET_ID: &str = "Gamer";
+const PLAYER_SHEET_ID: &str = "Gamer";
+const ENEMY_SHEET_ID: &str = "walkRight";
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         // Screen dimmensions to initialize Camera
         let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();
-
-        // Place the camera
-        self.init_camera(data.world, &dimensions);
-
-        // Places play
+        // self.init_camera(data.world, &dimensions);
         self.init_player(data.world, &dimensions);
+        self.init_enemy(data.world, Vector3::new(200.0, 450.0, 0.0));
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -49,13 +46,17 @@ impl SimpleState for GameplayState {
     ) -> SimpleTrans {
         if let StateEvent::Window(event) = &event {
             // Check if the window should be closed
-            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+            if is_close_requested(&event) {
                 return Trans::Quit;
+            }
+            // Check if the player presses escape
+            if is_key_down(&event, VirtualKeyCode::Escape) {
+                return Trans::Pop;
             }
 
             // Listen to any key events
-            if let Some(event) = get_key(&event) {
-                info!("handling key event: {:?}", event);
+            if let Some(_event) = get_key(&event) {
+                // log::info!("handling key event: {:?}", event);
             }
 
             // If you're looking for a more sophisticated event handling solution,
@@ -89,10 +90,9 @@ impl GameplayState {
         let mut transform = Transform::default();
         transform.set_translation_xyz(x, y, 0.);
         *transform.scale_mut() *= 0.25;
-
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, SHEET_ID, 0)
+            .find_sprite(world, PLAYER_SHEET_ID, 0)
             .unwrap();
         let player_prefab = world
             .read_resource::<CharacterPrefabRegistry>()
@@ -108,10 +108,34 @@ impl GameplayState {
         );
     }
 
+    fn init_enemy(&mut self, world:&mut World, position: Vector3<f32>) {
+        let mut transform = Transform::default();
+        transform.set_translation(position);
+        *transform.scale_mut() *= 3.0;
+        let sprite_render = world
+            .read_resource::<SpriteSheetRegister>()
+            .find_sprite(world, ENEMY_SHEET_ID, 0)
+            .expect(format!("Couldn't find spritesheet {}", ENEMY_SHEET_ID).as_str());
+        let enemy_prefab = world
+            .read_resource::<CharacterPrefabRegistry>()
+            .find(world, "enemy")
+            .expect("Couldn't find enemy prefab");
+        self.enemy = Some(
+            world
+                .create_entity()
+                .with(sprite_render)
+                .with(transform)
+                .with(enemy_prefab)
+                .build(),
+        );
+    }
+
     fn deinit_sprites(&mut self, world: &mut World) {
-        if let Some(player) = self.player {
+        if let Some(player) = self.player.take() {
             delete_hierarchy(world, player);
-            self.player = None;
+        }
+        if let Some(enemy) = self.enemy.take() {
+            delete_hierarchy(world, enemy);
         }
     }
 }

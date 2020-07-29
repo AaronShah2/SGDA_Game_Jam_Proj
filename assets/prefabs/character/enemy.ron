@@ -1,0 +1,10 @@
+Prefab(
+    entities: [
+        PrefabEntity(
+            data: Some(CharacterPrefab(
+                player: None,
+                enemy: Some(Enemy),
+            )),
+        ),
+    ],
+)

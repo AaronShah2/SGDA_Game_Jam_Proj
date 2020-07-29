@@ -1,6 +1,9 @@
-use crate::resources::{ResourceRegistry, prefabs::UiPrefabRegistry};
+use crate::{
+    resources::{ResourceRegistry, prefabs::UiPrefabRegistry},
+    utils::delete_hierarchy,
+};
 
-use amethyst::{core::transform::ParentHierarchy, ecs::Entity, prelude::*, ui::{UiEvent, UiEventType, UiFinder}};
+use amethyst::{ecs::Entity, prelude::*, ui::{UiEvent, UiEventType, UiFinder}};
 
 const ROOT_ID: &str = "options";
 const BACK_BUTTON_ID: &str = "back";
@@ -51,12 +54,10 @@ impl OptionsState {
         });
     }
 
-    fn tear_down_ui(&mut self, data: StateData<GameData>) {
+    fn tear_down_ui(&mut self, mut data: StateData<GameData>) {
         match self.root_entity {
             Some(e) => {
-                let mut to_delete: Vec<Entity> = data.world.read_resource::<ParentHierarchy>().all_children_iter(e).collect();
-                to_delete.push(e);
-                data.world.delete_entities(&to_delete).expect("Failed to remove menu elements");
+                delete_hierarchy(&mut data.world, e);
                 self.root_entity = None;
                 self.back_button = None;
             },

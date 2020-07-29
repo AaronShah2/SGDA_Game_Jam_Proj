@@ -8,18 +8,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
-pub struct Player;
+pub struct Enemy;
 
-impl Player {
-    pub fn shoot(&self) {
-        println!("PEW!");
-    }
-    
-    pub fn new() -> Self {
-        Player { }
-    }
-}
-
-impl Component for Player {
+impl Component for Enemy {
     type Storage = DenseVecStorage<Self>;
 }

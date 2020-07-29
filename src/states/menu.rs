@@ -3,9 +3,9 @@
 use crate::{
     resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
     states::{GameplayState, OptionsState},
+    utils::delete_hierarchy,
 };
 use amethyst::{
-    core::transform::ParentHierarchy,
     ecs::Entity,
     prelude::*,
     ui::{UiEvent, UiEventType, UiFinder},
@@ -86,12 +86,10 @@ impl MenuState {
         });
     }
 
-    fn tear_down_ui(&mut self, data: StateData<GameData>) {
+    fn tear_down_ui(&mut self, mut data: StateData<GameData>) {
         match self.root_entity {
             Some(e) => {
-                let mut to_delete: Vec<Entity> = data.world.read_resource::<ParentHierarchy>().all_children_iter(e).collect();
-                to_delete.push(e);
-                data.world.delete_entities(&to_delete).expect("Failed to remove menu elements");
+                delete_hierarchy(&mut data.world, e);
                 self.root_entity = None;
                 self.start_button = None;
                 self.options_button = None;

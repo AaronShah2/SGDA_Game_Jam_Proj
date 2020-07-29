@@ -2,6 +2,7 @@
 
 // neccesary Amethest imports
 use amethyst::{
+    assets::PrefabLoaderSystemDesc,
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
@@ -19,6 +20,7 @@ pub mod components;
 pub mod resources;
 pub mod states;
 pub mod systems;
+pub mod utils;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -40,8 +42,6 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(AudioBundle::default())?
         // testing out key configures
-        .with(systems::TestSystem, "test_system", &["input_system"])
-
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -50,7 +50,9 @@ fn main() -> amethyst::Result<()> {
                 )
                 .with_plugin(RenderUi::default())
                 .with_plugin(RenderFlat2D::default()),
-        )?;
+        )?
+        .with_system_desc(PrefabLoaderSystemDesc::<resources::prefabs::CharacterPrefab>::default(), "character_prefab_loader", &[])
+        .with(systems::TestSystem, "test_system", &["input_system"]);
 
     let mut game = Application::new(assets_dir, states::LoadingState::default(), game_data)?;
     game.run();

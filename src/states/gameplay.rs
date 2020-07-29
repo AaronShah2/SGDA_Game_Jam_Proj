@@ -1,6 +1,7 @@
 // neccesary imports
 use amethyst::{
     core::transform::Transform, // position?
+    ecs::Entity,
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode, InputEvent}, // input?
     prelude::*,
     renderer::{
@@ -10,16 +11,22 @@ use amethyst::{
     window::ScreenDimensions, // resolution?
 };
 
-use crate::resources::sprites::SpriteSheetRegister;
-
-//test out player controlls
-use crate::systems::Player;
+use crate::{
+    resources::{
+        ResourceRegistry,
+        prefabs::CharacterPrefabRegistry,
+        sprites::SpriteSheetRegister,
+    },
+    utils::delete_hierarchy,
+};
 
 use log::info;
 
 /// Testing game state
 #[derive(Default)]
-pub struct GameplayState;
+pub struct GameplayState {
+    player: Option<Entity>,
+}
 
 const SHEET_ID: &str = "Gamer";
 
@@ -29,10 +36,14 @@ impl SimpleState for GameplayState {
         let dimensions = (*data.world.read_resource::<ScreenDimensions>()).clone();
 
         // Place the camera
-        init_camera(data.world, &dimensions);
+        self.init_camera(data.world, &dimensions);
 
         // Places play
-        init_player(data.world, &dimensions);
+        self.init_player(data.world, &dimensions);
+    }
+
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        self.deinit_sprites(&mut data.world);
     }
 
     /// The following events are handled:
@@ -64,42 +75,44 @@ impl SimpleState for GameplayState {
     }
 }
 
-/// Creates Camera in world
-/// 'dimmensions' centers camera around screen
-fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.); // Centers Camera
+impl GameplayState {
+    /// Creates Camera in world
+    /// 'dimmensions' centers camera around screen
+    fn init_camera(&self, world: &mut World, dimensions: &ScreenDimensions) {
+        let mut transform = Transform::default();
+        transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.); // Centers Camera
 
-    world
-        .create_entity() // creates Camera entity?
-        .with(Camera::standard_2d(dimensions.width(), dimensions.height())) // creates 2d Camera centered on screen
-        .with(transform) // updates camera postion to be centered on screen
-        .build();
-}
+        world
+            .create_entity() // creates Camera entity?
+            .with(Camera::standard_2d(dimensions.width(), dimensions.height())) // creates 2d Camera centered on screen
+            .with(transform) // updates camera postion to be centered on screen
+            .build();
+    }
 
-fn init_player(world: &mut World, dimensions: &ScreenDimensions) {
-    // Bounds are currently hard-coded
-    for i in 0..1 {
-
+    fn init_player(&mut self, world: &mut World, dimensions: &ScreenDimensions) {
         // Center our sprites around the center of the window
-        let x = (i as f32 - 1.) * 100. + dimensions.width() * 0.5;
-        let y = (i as f32 - 1.) * 100. + dimensions.height() * 0.5;
+        let x = dimensions.width() * 0.5;
+        let y = dimensions.height() * 0.5;
         let mut transform = Transform::default();
         transform.set_translation_xyz(x, y, 0.);
 
-        // Create an entity for each sprite and attach the `SpriteRender` as
-        // well as the transform. If you want to add behaviour to your sprites,
-        // you'll want to add a custom `Component` that will identify them, and a
-        // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, SHEET_ID, i)
-            .expect(format!("Couldn't load sprite #{} on sheet {}.", i, SHEET_ID).as_str());
-        world
+            .find_sprite(world, SHEET_ID, 0)
+            .unwrap();
+        let player_prefab = world.read_resource::<CharacterPrefabRegistry>().find(world, "player").expect("Couldn't find player prefab");
+        self.player = Some(world
             .create_entity()
             .with(sprite_render)
             .with(transform)
-            .with(Player::new())
-            .build();
+            .with(player_prefab)
+            .build());
+    }
+
+    fn deinit_sprites(&mut self, world: &mut World) {
+        if let Some(player) = self.player {
+            delete_hierarchy(world, player);
+            self.player = None;
+        }
     }
 }

@@ -15,6 +15,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
+pub mod components;
 pub mod resources;
 pub mod states;
 pub mod systems;

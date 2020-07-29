@@ -2,21 +2,14 @@
 use amethyst::{
     core::transform::Transform, // position?
     ecs::Entity,
-    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode, InputEvent}, // input?
+    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-    renderer::{
-        Camera, Sprite, sprite::SpriteRender, SpriteSheet,
-        sprite::SpriteSheetHandle, Texture, SpriteSheetFormat, Transparent
-    },         // graphics & rendering tools?
+    renderer::Camera,         // graphics & rendering tools?
     window::ScreenDimensions, // resolution?
 };
 
 use crate::{
-    resources::{
-        ResourceRegistry,
-        prefabs::CharacterPrefabRegistry,
-        sprites::SpriteSheetRegister,
-    },
+    resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
     utils::delete_hierarchy,
 };
 
@@ -69,7 +62,7 @@ impl SimpleState for GameplayState {
             // including key bindings and gamepad support, please have a look at
             // https://book.amethyst.rs/stable/pong-tutorial/pong-tutorial-03.html#capturing-user-input
         }
-        
+
         // Keep going
         Trans::None
     }
@@ -100,13 +93,18 @@ impl GameplayState {
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, SHEET_ID, 0)
             .unwrap();
-        let player_prefab = world.read_resource::<CharacterPrefabRegistry>().find(world, "player").expect("Couldn't find player prefab");
-        self.player = Some(world
-            .create_entity()
-            .with(sprite_render)
-            .with(transform)
-            .with(player_prefab)
-            .build());
+        let player_prefab = world
+            .read_resource::<CharacterPrefabRegistry>()
+            .find(world, "player")
+            .expect("Couldn't find player prefab");
+        self.player = Some(
+            world
+                .create_entity()
+                .with(sprite_render)
+                .with(transform)
+                .with(player_prefab)
+                .build(),
+        );
     }
 
     fn deinit_sprites(&mut self, world: &mut World) {

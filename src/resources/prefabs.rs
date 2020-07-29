@@ -1,3 +1,4 @@
+use crate::components::*;
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, ProgressCounter, RonFormat},
     derive::PrefabData,
@@ -6,7 +7,6 @@ use amethyst::{
     utils::application_root_dir,
     Error,
 };
-use crate::components::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -106,7 +106,12 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                         .extension()
                         .map_or(false, |s| s.to_str() == Some("ron"))
                     {
-                        Some((filestem, world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| loader.load(filename, RonFormat, &mut counter))))
+                        Some((
+                            filestem,
+                            world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| {
+                                loader.load(filename, RonFormat, &mut counter)
+                            }),
+                        ))
                     } else {
                         None
                     }

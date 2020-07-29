@@ -18,14 +18,13 @@ impl<'s> System<'s> for TestSystem {
         ReadStorage<'s, Player>,
         Read<'s, InputHandler<StringBindings>>,
     );
-    
+
     fn run(&mut self, (mut transforms, players, input): Self::SystemData) {
         for (player, transform) in (&players, &mut transforms).join() {
-
             // unwraps elements from inputs.ron
             let horizontal = input.axis_value("horizontal").unwrap_or(0.0);
             let vertical = input.axis_value("vertical").unwrap_or(0.0);
-            
+
             // lets player move up and down
             transform.move_up(vertical);
             transform.move_right(horizontal);

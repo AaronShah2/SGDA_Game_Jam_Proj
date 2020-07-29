@@ -1,9 +1,13 @@
 use crate::{
-    resources::{ResourceRegistry, prefabs::UiPrefabRegistry},
+    resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
     utils::delete_hierarchy,
 };
 
-use amethyst::{ecs::Entity, prelude::*, ui::{UiEvent, UiEventType, UiFinder}};
+use amethyst::{
+    ecs::Entity,
+    prelude::*,
+    ui::{UiEvent, UiEventType, UiFinder},
+};
 
 const ROOT_ID: &str = "options";
 const BACK_BUTTON_ID: &str = "back";
@@ -16,10 +20,20 @@ pub struct OptionsState {
 
 impl SimpleState for OptionsState {
     // handles button presses
-    fn handle_event(&mut self, _data: StateData<'_, GameData<'_, '_>>, event: StateEvent,) -> SimpleTrans {
+    fn handle_event(
+        &mut self,
+        _data: StateData<'_, GameData<'_, '_>>,
+        event: StateEvent,
+    ) -> SimpleTrans {
         match event {
-            StateEvent::Ui(UiEvent { event_type: UiEventType::Click, target, }) => {
-                if self.back_button.map_or(false, |back_button| back_button == target) {
+            StateEvent::Ui(UiEvent {
+                event_type: UiEventType::Click,
+                target,
+            }) => {
+                if self
+                    .back_button
+                    .map_or(false, |back_button| back_button == target)
+                {
                     Trans::Pop
                 } else {
                     Trans::None
@@ -55,13 +69,10 @@ impl OptionsState {
     }
 
     fn tear_down_ui(&mut self, mut data: StateData<GameData>) {
-        match self.root_entity {
-            Some(e) => {
-                delete_hierarchy(&mut data.world, e);
-                self.root_entity = None;
-                self.back_button = None;
-            },
-            None => {},
+        if let Some(e) = self.root_entity {
+            delete_hierarchy(&mut data.world, e);
+            self.root_entity = None;
+            self.back_button = None;
         }
     }
 }

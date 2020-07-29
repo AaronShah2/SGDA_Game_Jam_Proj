@@ -20,30 +20,40 @@ impl super::ResourceRegistry for SpriteSheetRegister {
 }
 impl SpriteSheetRegister {
     pub fn find_sprite(&self, world: &World, name: &str, index: usize) -> Option<SpriteRender> {
-        self.sprite_sheets
-            .get(name)
-            .map_or_else(
-                || {
-                    warn!("Tried to load sprite #{} from non-existant sheet {}.\nExisting sheets: {}", index, name, self.sprite_sheets.keys().cloned().collect::<Vec<_>>().join(", "));
+        self.sprite_sheets.get(name).map_or_else(
+            || {
+                warn!(
+                    "Tried to load sprite #{} from non-existant sheet {}.\nExisting sheets: {}",
+                    index,
+                    name,
+                    self.sprite_sheets
+                        .keys()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
+                None
+            },
+            |sprite_sheet| {
+                let sheet_length = world
+                    .read_resource::<AssetStorage<SpriteSheet>>()
+                    .get(&sprite_sheet)?
+                    .sprites
+                    .len();
+                if index >= sheet_length {
+                    warn!(
+                        "Tried to load sprite #{}/{} on sheet {}",
+                        index, sheet_length, name
+                    );
                     None
-                },
-                |sprite_sheet| {
-                    let sheet_length = world
-                        .read_resource::<AssetStorage<SpriteSheet>>()
-                        .get(&sprite_sheet)?
-                        .sprites
-                        .len();
-                    if index >= sheet_length {
-                        warn!("Tried to load sprite #{}/{} on sheet {}", index, sheet_length, name);
-                        None
-                    } else {
-                        Some(SpriteRender {
-                            sprite_sheet: sprite_sheet.clone(),
-                            sprite_number: index,
-                        })
-                    }
-                },
-            )
+                } else {
+                    Some(SpriteRender {
+                        sprite_sheet: sprite_sheet.clone(),
+                        sprite_number: index,
+                    })
+                }
+            },
+        )
     }
 }
 

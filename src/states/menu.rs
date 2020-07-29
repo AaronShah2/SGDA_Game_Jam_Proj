@@ -24,9 +24,16 @@ pub struct MenuState {
 
 impl SimpleState for MenuState {
     // handles button presses
-    fn handle_event(&mut self, _data: StateData<'_, GameData<'_, '_>>, event: StateEvent,) -> SimpleTrans {
+    fn handle_event(
+        &mut self,
+        _data: StateData<'_, GameData<'_, '_>>,
+        event: StateEvent,
+    ) -> SimpleTrans {
         match event {
-            StateEvent::Ui(UiEvent { event_type: UiEventType::Click, target, }) => {
+            StateEvent::Ui(UiEvent {
+                event_type: UiEventType::Click,
+                target,
+            }) => {
                 if self.start_button.map_or(false, |button| button == target) {
                     // Start Button: Transitions to next scene
                     Trans::Push(Box::new(GameplayState::default()))
@@ -87,15 +94,12 @@ impl MenuState {
     }
 
     fn tear_down_ui(&mut self, mut data: StateData<GameData>) {
-        match self.root_entity {
-            Some(e) => {
-                delete_hierarchy(&mut data.world, e);
-                self.root_entity = None;
-                self.start_button = None;
-                self.options_button = None;
-                self.exit_button = None;
-            },
-            None => {},
+        if let Some(e) = self.root_entity {
+            delete_hierarchy(&mut data.world, e);
+            self.root_entity = None;
+            self.start_button = None;
+            self.options_button = None;
+            self.exit_button = None;
         }
     }
 }

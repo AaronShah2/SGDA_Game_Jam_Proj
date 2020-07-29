@@ -6,7 +6,7 @@ use amethyst::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
+#[derive(Copy, Clone, Debug, Default, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
 pub struct Enemy;
 

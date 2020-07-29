@@ -33,9 +33,9 @@ fn main() -> amethyst::Result<()> {
 
     // adds key bindings & creates input handle
     let bindings_config = config_dir.join("inputs.ron");
-    let input_bundle = InputBundle::<StringBindings>::new()
-        .with_bindings_from_file(bindings_config)?;
-    
+    let input_bundle =
+        InputBundle::<StringBindings>::new().with_bindings_from_file(bindings_config)?;
+
     let game_data = GameDataBuilder::default()
         .with_bundle(input_bundle)?
         .with_bundle(TransformBundle::new())?
@@ -51,7 +51,11 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderUi::default())
                 .with_plugin(RenderFlat2D::default()),
         )?
-        .with_system_desc(PrefabLoaderSystemDesc::<resources::prefabs::CharacterPrefab>::default(), "character_prefab_loader", &[])
+        .with_system_desc(
+            PrefabLoaderSystemDesc::<resources::prefabs::CharacterPrefab>::default(),
+            "character_prefab_loader",
+            &[],
+        )
         .with(systems::TestSystem, "test_system", &["input_system"]);
 
     let mut game = Application::new(assets_dir, states::LoadingState::default(), game_data)?;

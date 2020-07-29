@@ -24,7 +24,7 @@ impl SimpleState for LoadingState {
 
         // number of assets being loaded
         let loading: usize = self.counters.iter().map(ProgressCounter::num_loading).sum();
-        
+
         // number of assets that have failed to load
         let failed: usize = self.counters.iter().map(ProgressCounter::num_failed).sum();
 
@@ -41,7 +41,6 @@ impl SimpleState for LoadingState {
 
         // checks if there are no more assets that need to be loaded
         if loading == 0 {
-
             // if certain assets fail to load, then return an error
             if failed != 0 {
                 panic!(

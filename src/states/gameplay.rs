@@ -1,12 +1,12 @@
 // neccesary imports
+use crate::{
+    resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
+    utils::delete_hierarchy,
+};
 use amethyst::{
     ecs::Entity,
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
     prelude::*,
-};
-use crate::{
-    resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
-    utils::delete_hierarchy,
 };
 
 /// Testing game state
@@ -81,11 +81,11 @@ impl GameplayState {
         );
     }
 
-    fn init_enemy(&mut self, world:&mut World) {
+    fn init_enemy(&mut self, world: &mut World) {
         let sprite_render = world
             .read_resource::<SpriteSheetRegister>()
             .find_sprite(world, ENEMY_SHEET_ID, 0)
-            .expect(format!("Couldn't find spritesheet {}", ENEMY_SHEET_ID).as_str());
+            .unwrap_or_else(|| panic!("Couldn't find spritesheet {}", ENEMY_SHEET_ID));
         let enemy_prefab = world
             .read_resource::<CharacterPrefabRegistry>()
             .find(world, "enemy")

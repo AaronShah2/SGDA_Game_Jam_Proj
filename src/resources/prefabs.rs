@@ -3,7 +3,7 @@ use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, ProgressCounter, RonFormat},
     core::transform::Transform,
     derive::PrefabData,
-    ecs::{Entity, WriteStorage, World, WorldExt},
+    ecs::{Entity, World, WorldExt, WriteStorage},
     renderer::Camera,
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
@@ -51,12 +51,12 @@ impl<'a> PrefabData<'a> for CameraAdapterPrefab {
     type Result = ();
 
     fn add_to_entity(
-            &self,
-            entity: Entity,
-            cameras: &mut Self::SystemData,
-            _entities: &[Entity],
-            _children: &[Entity],
-        ) -> Result<Self::Result, Error> {
+        &self,
+        entity: Entity,
+        cameras: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
         cameras.insert(entity, Camera::standard_2d(self.width, self.height))?;
         Ok(())
     }
@@ -75,12 +75,12 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
     type Result = ();
 
     fn add_to_entity(
-            &self,
-            entity: Entity,
-            transforms: &mut Self::SystemData,
-            _entities: &[Entity],
-            _children: &[Entity],
-        ) -> Result<Self::Result, Error> {
+        &self,
+        entity: Entity,
+        transforms: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
         let mut transform = Transform::default();
         if let Some((x, y)) = self.pos2d {
             transform.set_translation_xyz(x, y, 0.0);

@@ -11,6 +11,7 @@ Prefab(
             parent: 0,
             data: CharacterPrefab(
                 camera: CameraAdapterPrefab(width: 1200.0, height: 800.0),
+                // Scale the camera up because the parent player is scaled down
                 position: TransformAdapterPrefab(pos3d: (0.0, 0.0, 10.0), scale: 4.0),
             ),
         ),

@@ -1,10 +1,10 @@
+use crate::components::Player;
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
     input::{InputHandler, StringBindings},
 };
-use crate::components::Player;
 use nalgebra::base::Vector3;
 
 const MOVE_SPEED: f32 = 10.0f32;

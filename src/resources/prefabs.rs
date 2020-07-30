@@ -21,22 +21,47 @@ impl super::ResourceRegistry for UiPrefabRegistry {
 
     fn find(&self, world: &World, name: &str) -> Option<Self::ResourceType> {
         let storage = world.read_resource::<AssetStorage<UiPrefab>>();
-        self.prefabs.iter().find_map(|handle| {
-            if storage
-                .get(handle)?
-                .entities()
-                .next()?
-                .data()?
-                .0
-                .as_ref()?
-                .id
-                == name
-            {
-                Some(handle.clone())
-            } else {
+        self.prefabs
+            .iter()
+            .find_map(|handle| {
+                if storage
+                    .get(handle)?
+                    .entities()
+                    .next()?
+                    .data()?
+                    .0
+                    .as_ref()?
+                    .id
+                    == name
+                {
+                    Some(handle.clone())
+                } else {
+                    None
+                }
+            })
+            .or_else(|| {
+                // Warn that the desired prefab doesn't exist
+                log::warn!(
+                    "Tried to load non-existing Ui Prefab {}.\n Existing prefabs are: {}",
+                    name,
+                    self.prefabs
+                        .iter()
+                        .filter_map(|handle| Some(
+                            storage
+                                .get(handle)?
+                                .entities()
+                                .next()?
+                                .data()?
+                                .0
+                                .as_ref()?
+                                .id
+                                .to_string()
+                        ))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
                 None
-            }
-        })
+            })
     }
 }
 

@@ -1,0 +1,22 @@
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "grey-overlay",
+        anchor: Middle,
+        stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: true),
+        width: 500,
+        height: 500,
+    ),
+    children: [
+        Image(
+            transform: (
+                id: "background",
+                z: 0.5,
+                width: 1200.0,
+                height: 900.0,
+                anchor: Middle,
+            ),
+            image: SolidColor(0.2, 0.2, 0.2, 0.7),
+        ),
+    ],
+)

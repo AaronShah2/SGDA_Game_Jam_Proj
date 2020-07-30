@@ -1,7 +1,10 @@
+mod controls;
 pub mod prefabs;
 pub mod sprites;
 
 use amethyst::prelude::*;
+
+pub use controls::Controls;
 
 /// A registry of some type of resource which enables lookup
 pub trait ResourceRegistry {

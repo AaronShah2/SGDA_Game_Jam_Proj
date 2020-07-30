@@ -6,10 +6,13 @@ use amethyst::{
 };
 use serde::{Deserialize, Serialize};
 
+const RUBBER_BAND_CUTOFF: f32 = 200.0;
+const RUBBER_BAND_COEFFICIENT: f32 = 0.01;
+
 #[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
 pub struct Enemy {
-    pub speed: f32,
+    speed: f32,
 }
 impl Enemy {
     pub fn new() -> Self {
@@ -28,6 +31,10 @@ impl Enemy {
     //doubles speed
     pub fn speed_up(&mut self) {
         self.speed = 18.0f32;
+    }
+
+    pub fn speed(&self, distance: f32) -> f32 {
+        self.speed + (distance - RUBBER_BAND_CUTOFF).max(0.0) * RUBBER_BAND_COEFFICIENT
     }
 }
 impl Default for Enemy {

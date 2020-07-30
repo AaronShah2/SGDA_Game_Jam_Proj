@@ -31,7 +31,10 @@ impl<'s> System<'s> for EnemyMovementSystem {
             for (enemy, transform) in (&enemies, &mut transforms).join() {
                 let movement = player_position - transform.translation();
                 if movement.norm_squared() != 0.0 {
-                    transform.prepend_translation(movement.normalize() * enemy.speed);
+                    transform.prepend_translation(
+                        movement.normalize()
+                            * enemy.speed((player_position - transform.translation()).norm()),
+                    );
                 }
             }
         } else if (&enemies,).join().next().is_some() {

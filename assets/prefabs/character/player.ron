@@ -3,7 +3,7 @@ Prefab(
     entities: [
         PrefabEntity(
             data: CharacterPrefab(
-                player: Player,
+                player: PlayerPrefab,
                 position: TransformAdapterPrefab(pos2d: (0.0, 0.0), scale: 0.25, layer: 1.0),
             ),
         ),

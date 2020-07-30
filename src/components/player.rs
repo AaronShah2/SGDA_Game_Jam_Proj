@@ -6,7 +6,7 @@ use amethyst::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, Default, Deserialize, PrefabData, Serialize)]
+#[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
 pub struct Player {
     pub speed: f32,
@@ -35,7 +35,11 @@ impl Player {
         Player { speed: 10.0f32 }
     }
 }
-
+impl Default for Player {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl Component for Player {
     type Storage = DenseVecStorage<Self>;
 }

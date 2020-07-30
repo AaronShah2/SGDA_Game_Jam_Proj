@@ -127,12 +127,31 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
     }
 }
 
+
+#[derive(Copy, Clone, Debug, Default, Deserialize, Serialize)]
+pub struct PlayerPrefab;
+impl<'a> PrefabData<'a> for PlayerPrefab {
+    type SystemData = WriteStorage<'a, Player>;
+    type Result = ();
+
+    fn add_to_entity(
+            &self,
+            entity: Entity,
+            players: &mut Self::SystemData,
+            _entities: &[Entity],
+            _children: &[Entity],
+        ) -> Result<Self::Result, Error> {
+        players.insert(entity, Player::default())?;
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CharacterPrefab {
     camera: Option<CameraAdapterPrefab>,
     enemy: Option<Enemy>,
-    player: Option<Player>,
+    player: Option<PlayerPrefab>,
     position: Option<TransformAdapterPrefab>,
 }
 

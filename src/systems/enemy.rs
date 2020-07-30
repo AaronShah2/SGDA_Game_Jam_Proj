@@ -8,7 +8,6 @@ use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
 };
 
-const MOVE_SPEED: f32 = 9.0;
 #[derive(SystemDesc)]
 pub struct EnemyMovementSystem;
 
@@ -29,10 +28,10 @@ impl<'s> System<'s> for EnemyMovementSystem {
             .next()
             .map(|(_, t)| *t.translation())
         {
-            for (_, transform) in (&enemies, &mut transforms).join() {
+            for (enemy, transform) in (&enemies, &mut transforms).join() {
                 let movement = player_position - transform.translation();
                 if movement.norm_squared() != 0.0 {
-                    transform.prepend_translation(movement.normalize() * MOVE_SPEED);
+                    transform.prepend_translation(movement.normalize() * enemy.speed);
                 }
             }
         } else if (&enemies,).join().next().is_some() {

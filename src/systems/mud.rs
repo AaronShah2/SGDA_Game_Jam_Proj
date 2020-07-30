@@ -9,7 +9,7 @@ use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
 };
 
-const COLLISION_RADIUS: f32 = 510.0;
+const COLLISION_RADIUS: f32 = 600.0;
 #[derive(SystemDesc)]
 pub struct MudSystem;
 
@@ -18,13 +18,13 @@ impl<'s> System<'s> for MudSystem {
     type SystemData = (
         ReadStorage<'s, Transform>,
         WriteStorage<'s, Player>,
-        ReadStorage<'s, Enemy>,
+        WriteStorage<'s, Enemy>,
         ReadStorage<'s, Mud>,
         Read<'s, Paused>,
     );
 
     //TODO: Fix collision hitbox, slow down enemy
-    fn run(&mut self, (transforms, mut players, enemies, mud, paused): Self::SystemData) {
+    fn run(&mut self, (transforms, mut players, mut enemies, mud, paused): Self::SystemData) {
         // Pauses game
         if *paused == Paused::Paused {
             return;
@@ -42,18 +42,15 @@ impl<'s> System<'s> for MudSystem {
             }
         }
         // checks if enemy collides with mud
-        for ((_, enemy_transform), (_, mud_transform)) in
-            (&enemies, &transforms).join().flat_map(|e| {
-                (&mud, &transforms)
-                    .join()
-                    .map(|m| (e, m))
-                    .collect::<Vec<_>>()
-            })
-        {
-            if (enemy_transform.translation() - mud_transform.translation()).norm()
-                <= COLLISION_RADIUS
-            {
-                log::info!("Collision between enemy and mud");
+        for (enemy, enemy_transform) in (&mut enemies, &transforms).join() {
+            for (_, mud_transform) in (&mud, &transforms).join() {
+                if (enemy_transform.translation() - mud_transform.translation()).norm()
+                    <= COLLISION_RADIUS
+                {
+                    enemy.slow_down();
+                } else {
+                    enemy.normal_speed();
+                }
             }
         }
     }

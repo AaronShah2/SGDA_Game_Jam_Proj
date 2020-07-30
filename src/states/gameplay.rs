@@ -2,8 +2,8 @@
 use crate::{
     resources::{
         prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry},
-        sprites::SpriteSheetRegister, QuitToMenu,
-        ResourceRegistry,
+        sprites::SpriteSheetRegister,
+        QuitToMenu, ResourceRegistry,
     },
     states::PauseState,
     utils::delete_hierarchy,

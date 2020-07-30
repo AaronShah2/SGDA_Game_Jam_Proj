@@ -6,15 +6,15 @@
 // };
 // use serde::{Deserialize, Serialize};
 
-mod player;
-mod mud;
-mod enemy;
 mod background;
+mod enemy;
+mod mud;
+mod player;
 
+pub use background::Background;
+pub use enemy::Enemy;
 pub use mud::Mud;
 pub use player::Player;
-pub use enemy::Enemy;
-pub use background::Background;
 
 // #[derive(Copy, Clone, Debug, Default, Deserialize, PrefabData, Serialize)]
 // #[prefab(Component)]

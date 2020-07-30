@@ -261,8 +261,8 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                 } else {
                     None
                 }
-        })
-        .collect();
+            })
+            .collect();
         world.insert(reg);
         // Load Character Prefabs
         {
@@ -289,14 +289,14 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                                     loader.load(filename, RonFormat, &mut counter)
                                 }),
                             ))
+                        } else {
+                            None
+                        }
                     } else {
-                         None
+                        None
                     }
-                } else {
-                    None
-                }
-            })
-            .collect();
+                })
+                .collect();
             world.insert(reg);
         }
 
@@ -325,14 +325,14 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                                     loader.load(filename, RonFormat, &mut counter)
                                 }),
                             ))
+                        } else {
+                            None
+                        }
                     } else {
-                         None
+                        None
                     }
-                } else {
-                    None
-                }
-            })
-            .collect();
+                })
+                .collect();
             world.insert(reg);
         }
     }

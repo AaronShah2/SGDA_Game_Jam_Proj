@@ -1,9 +1,9 @@
 mod background;
 mod enemy;
-mod player;
 mod mud;
+mod player;
 
 pub use background::BackgroundRepeatSystem;
 pub use enemy::{EnemyCollisionSystem, EnemyMovementSystem};
-pub use player::PlayerSystem;
 pub use mud::MudSystem;
+pub use player::PlayerSystem;

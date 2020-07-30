@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Default, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
-pub struct Player{
+pub struct Player {
     pub speed: f32,
 }
 
@@ -22,19 +22,17 @@ impl Player {
     }
 
     //returns speed back to normal
-    pub fn normal_speed(&mut self){
+    pub fn normal_speed(&mut self) {
         self.speed = 10.0f32;
     }
-    
+
     //doubles speed
     pub fn speed_up(&mut self) {
         self.speed = 20.0f32;
     }
 
     pub fn new() -> Self {
-        Player {
-            speed: 10.0f32,
-        }
+        Player { speed: 10.0f32 }
     }
 }
 

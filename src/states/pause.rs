@@ -11,6 +11,7 @@ use amethyst::{
 };
 
 const PAUSE_ID: &str = "pause";
+const GRAY_OVERLAY_ID: &str = "grey-overlay";
 
 const RETURN_TO_GAME_BUTTON: &str = "return_to_game";
 const OPTIONS_BUTTON: &str = "options";
@@ -24,25 +25,28 @@ pub struct PauseState {
     options_button: Option<Entity>,
     menu_button: Option<Entity>,
     exit_button: Option<Entity>,
+    grey_overlay: Option<Entity>,
 }
 
 impl SimpleState for PauseState {
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         *data.world.write_resource::<Paused>() = Paused::Paused;
-        self.init_gui(data);
+        self.init_gui(&mut data);
+        self.init_overlay(&mut data);
     }
 
-    fn on_stop(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         *data.world.write_resource::<Paused>() = Paused::Unpaused;
-        self.deinit_gui(data);
+        self.deinit_gui(&mut data);
+        self.deinit_overlay(&mut data);
     }
 
-    fn on_pause(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        self.deinit_gui(data);
+    fn on_pause(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        self.deinit_gui(&mut data);
     }
 
-    fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        self.init_gui(data);
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        self.init_gui(&mut data);
     }
 
     fn handle_event(
@@ -83,7 +87,21 @@ impl SimpleState for PauseState {
     }
 }
 impl PauseState {
-    fn init_gui(&mut self, data: StateData<GameData>) {
+    fn init_overlay(&mut self, data: &mut StateData<GameData>) {
+        let prefab = data
+            .world
+            .read_resource::<UiPrefabRegistry>()
+            .find(data.world, GRAY_OVERLAY_ID)
+            .expect("Couldn't load grey overlay for pause menu");
+        self.grey_overlay = Some(data.world.create_entity().with(prefab).build());
+        data.data.update(&data.world);
+    }
+    fn deinit_overlay(&mut self, data: &mut StateData<GameData>) {
+        if let Some(e) = self.grey_overlay.take() {
+            delete_hierarchy(&mut data.world, e);
+        }
+    }
+    fn init_gui(&mut self, data: &mut StateData<GameData>) {
         let prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
@@ -99,7 +117,7 @@ impl PauseState {
             self.exit_button = ui_finder.find(EXIT_BUTTON);
         });
     }
-    fn deinit_gui(&mut self, mut data: StateData<GameData>) {
+    fn deinit_gui(&mut self, data: &mut StateData<GameData>) {
         if let Some(e) = self.root_entity.take() {
             delete_hierarchy(&mut data.world, e);
             self.options_button = None;

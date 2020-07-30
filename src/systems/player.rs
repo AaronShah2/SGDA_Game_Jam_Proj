@@ -33,7 +33,7 @@ impl<'s> System<'s> for PlayerSystem {
             // lets player move
             let movement = Vector3::new(horizontal, vertical, 0.0f32);
             if movement.norm_squared() != 0.0 {
-                transform.prepend_translation(movement.normalize() * MOVE_SPEED);
+                transform.prepend_translation(movement.normalize() * (player.speed));
                 transform.translation_mut().x =
                     transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
             }

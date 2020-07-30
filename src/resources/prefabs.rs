@@ -153,6 +153,27 @@ impl BackgroundPrefabRegistry {
     }
 }
 
+// prefabs for obstacles
+#[derive(Clone, Debug, Deserialize, PrefabData, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ObstaclePrefab {
+    mud: Option<Mud>,
+    mudposition: Option<TransformAdapterPrefab>,
+}
+
+#[derive(Default)]
+pub struct ObstaclePrefabRegistry {
+    prefabs: HashMap<String, Handle<Prefab<ObstaclePrefab>>>,
+}
+
+impl super::ResourceRegistry for ObstaclePrefabRegistry {
+    type ResourceType = Handle<Prefab<ObstaclePrefab>>;
+
+    fn find(&self, _: &World, name: &str) -> Option<Self::ResourceType> {
+        self.prefabs.get(name).cloned()
+    }
+}
+
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut counter = ProgressCounter::new();
     // Load UI Prefabs
@@ -215,8 +236,8 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                 } else {
                     None
                 }
-            })
-            .collect();
+        })
+        .collect();
         world.insert(reg);
         // Load Character Prefabs
         {
@@ -243,14 +264,50 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                                     loader.load(filename, RonFormat, &mut counter)
                                 }),
                             ))
-                        } else {
-                            None
-                        }
                     } else {
-                        None
+                         None
                     }
-                })
-                .collect();
+                } else {
+                    None
+                }
+            })
+            .collect();
+            world.insert(reg);
+        }
+
+        // Load Obstacle Prefabs
+        {
+            let mut reg = ObstaclePrefabRegistry::default();
+            let prefab_path = application_root_dir()
+                .unwrap()
+                .join("assets")
+                .join("prefabs")
+                .join("obstacle");
+            let prefab_iter = std::fs::read_dir(prefab_path.to_str().unwrap()).unwrap();
+            reg.prefabs = prefab_iter
+                .filter_map(|entry| {
+                    if let Ok(file) = entry {
+                        let file = file.path();
+                        let filename = file.to_str()?;
+                        let filestem = file.file_stem()?.to_str()?.to_string();
+                        if file
+                            .extension()
+                            .map_or(false, |s| s.to_str() == Some("ron"))
+                        {
+                            Some((
+                                filestem,
+                                world.exec(|loader: PrefabLoader<'_, ObstaclePrefab>| {
+                                    loader.load(filename, RonFormat, &mut counter)
+                                }),
+                            ))
+                    } else {
+                         None
+                    }
+                } else {
+                    None
+                }
+            })
+            .collect();
             world.insert(reg);
         }
     }

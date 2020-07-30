@@ -1,7 +1,8 @@
 // neccesary imports
 use crate::{
     resources::{
-        prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, QuitToMenu,
+        prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry},
+        sprites::SpriteSheetRegister, QuitToMenu,
         ResourceRegistry,
     },
     states::PauseState,
@@ -19,15 +20,18 @@ pub struct GameplayState {
     player: Option<Entity>,
     enemy: Option<Entity>,
     background: Option<Entity>,
+    mud: Option<Entity>,
 }
 
 const PLAYER_SHEET_ID: &str = "Gamer";
 const ENEMY_SHEET_ID: &str = "walkRight";
+const MUD_SHEET_ID: &str = "mud";
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         self.init_player(data.world);
         self.init_enemy(data.world);
+        self.init_mud(data.world);
         data.world.insert(QuitToMenu(false));
     }
 
@@ -120,5 +124,26 @@ impl GameplayState {
         if let Some(background) = self.background.take() {
             delete_hierarchy(world, background);
         }
+        if let Some(mud) = self.mud.take() {
+            delete_hierarchy(world, mud);
+        }
+    }
+
+    fn init_mud(&mut self, world: &mut World) {
+        let sprite_render = world
+            .read_resource::<SpriteSheetRegister>()
+            .find_sprite(world, MUD_SHEET_ID, 0)
+            .unwrap();
+        let mud_prefab = world
+            .read_resource::<ObstaclePrefabRegistry>()
+            .find(world, "mud")
+            .expect("Couldn't find player prefab");
+        self.mud = Some(
+            world
+                .create_entity()
+                .with(sprite_render)
+                .with(mud_prefab)
+                .build(),
+        );
     }
 }

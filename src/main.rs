@@ -61,6 +61,11 @@ fn main() -> amethyst::Result<()> {
             "background_prefab_loader",
             &[],
         )
+        .with_system_desc(
+            PrefabLoaderSystemDesc::<resources::prefabs::ObstaclePrefab>::default(),
+            "obstacle_prefab_loader",
+            &[],
+        )
         .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with(
             systems::BackgroundRepeatSystem,
@@ -76,6 +81,11 @@ fn main() -> amethyst::Result<()> {
             systems::EnemyCollisionSystem,
             "enemy_collision_system",
             &["player_system", "enemy_movement_system"],
+        )
+        .with(
+            systems::MudSystem,
+            "mud_system",
+            &["player_system"],
         );
 
     let mut game = Application::new(assets_dir, states::LoadingState::default(), game_data)?;

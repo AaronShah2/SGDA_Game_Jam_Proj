@@ -9,7 +9,7 @@ use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
 };
 
-const COLLISION_RADIUS: f32 = 600.0;
+const COLLISION_RADIUS: f32 = 120.0;
 #[derive(SystemDesc)]
 pub struct MudSystem;
 

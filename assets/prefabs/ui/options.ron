@@ -49,5 +49,47 @@ Container(
                 press_text_color: (1.0, 1.0, 1.0, 1.0),
             ),
         ),
+        Button(
+            transform: (
+                id: "controls",
+                x: 0.0,
+                y: 0.0,
+                z: 9.0,
+                width: 300.0,
+                height: 50.0,
+                anchor: Middle,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 36.0,
+                normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
+                hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
+                press_image: SolidColor(0.2, 0.2, 0.2, 1.),
+                normal_text_color: (0.9, 0.9, 0.9, 1.0),
+                hover_text_color: (0.9, 0.9, 0.9, 1.0),
+                press_text_color: (0.9, 0.9, 0.9, 1.0),
+            ),
+        ),
+        Label(
+            transform: (
+                id: "controls_label",
+                x: 0.0,
+                y: 0.0,
+                z: 10.0,
+                width: 300.0,
+                height: 50.0,
+                anchor: Middle,
+                mouse_reactive: false,
+                opaque: false,
+            ),
+            text: (
+                text: "Controls: Unknown",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 36.0,
+                color: (0.9, 0.9, 0.9, 1.0),
+            ),
+        ),
     ]
 )

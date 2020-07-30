@@ -68,6 +68,7 @@ pub struct TransformAdapterPrefab {
     pos2d: Option<(f32, f32)>,
     pos3d: Option<(f32, f32, f32)>,
     scale: Option<f32>,
+    layer: Option<f32>,
 }
 
 impl<'a> PrefabData<'a> for TransformAdapterPrefab {
@@ -83,7 +84,15 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
     ) -> Result<Self::Result, Error> {
         let mut transform = Transform::default();
         if let Some((x, y)) = self.pos2d {
-            transform.set_translation_xyz(x, y, 0.0);
+
+            // Handles layering
+            if let Some(layer) = self.layer {
+                transform.set_translation_xyz(x, y, layer);
+            }
+            else
+            {
+                transform.set_translation_xyz(x, y, 0.0);
+            }
         }
         if let Some((x, y, z)) = self.pos3d {
             transform.set_translation_xyz(x, y, z);

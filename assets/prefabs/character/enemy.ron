@@ -4,7 +4,7 @@ Prefab(
         PrefabEntity(
             data: CharacterPrefab(
                 enemy: Enemy,
-                position: TransformAdapterPrefab(pos2d: (0.0, 500.0), scale: 3.0),
+                position: TransformAdapterPrefab(pos2d: (0.0, 500.0), scale: 3.0, layer: 1.0),
             ),
         ),
     ],

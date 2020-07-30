@@ -94,9 +94,8 @@ impl MenuState {
     }
 
     fn tear_down_ui(&mut self, mut data: StateData<GameData>) {
-        if let Some(e) = self.root_entity {
+        if let Some(e) = self.root_entity.take() {
             delete_hierarchy(&mut data.world, e);
-            self.root_entity = None;
             self.start_button = None;
             self.options_button = None;
             self.exit_button = None;

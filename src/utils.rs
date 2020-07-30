@@ -8,5 +8,5 @@ pub fn delete_hierarchy(world: &mut World, root: Entity) {
     to_delete.push(root);
     world
         .delete_entities(&to_delete)
-        .expect("Failed to remove menu elements");
+        .unwrap_or_else(|e| log::warn!("Error removing heirarchy: {}", e));
 }

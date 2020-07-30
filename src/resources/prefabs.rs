@@ -84,13 +84,10 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
     ) -> Result<Self::Result, Error> {
         let mut transform = Transform::default();
         if let Some((x, y)) = self.pos2d {
-
             // Handles layering
             if let Some(layer) = self.layer {
                 transform.set_translation_xyz(x, y, layer);
-            }
-            else
-            {
+            } else {
                 transform.set_translation_xyz(x, y, 0.0);
             }
         }
@@ -132,6 +129,7 @@ impl super::ResourceRegistry for CharacterPrefabRegistry {
 #[serde(deny_unknown_fields)]
 pub struct BackgroundPrefab {
     position: Option<TransformAdapterPrefab>,
+    background: Background,
 }
 
 #[derive(Default)]
@@ -212,41 +210,41 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             })
             .collect();
         world.insert(reg);
-    // Load Character Prefabs
-    {
-        let mut reg = CharacterPrefabRegistry::default();
-        let prefab_path = application_root_dir()
-            .unwrap()
-            .join("assets")
-            .join("prefabs")
-            .join("character");
-        let prefab_iter = std::fs::read_dir(prefab_path.to_str().unwrap()).unwrap();
-        reg.prefabs = prefab_iter
-            .filter_map(|entry| {
-                if let Ok(file) = entry {
-                    let file = file.path();
-                    let filename = file.to_str()?;
-                    let filestem = file.file_stem()?.to_str()?.to_string();
-                    if file
-                        .extension()
-                        .map_or(false, |s| s.to_str() == Some("ron"))
-                    {
-                        Some((
-                            filestem,
-                            world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| {
-                                loader.load(filename, RonFormat, &mut counter)
-                            }),
-                        ))
+        // Load Character Prefabs
+        {
+            let mut reg = CharacterPrefabRegistry::default();
+            let prefab_path = application_root_dir()
+                .unwrap()
+                .join("assets")
+                .join("prefabs")
+                .join("character");
+            let prefab_iter = std::fs::read_dir(prefab_path.to_str().unwrap()).unwrap();
+            reg.prefabs = prefab_iter
+                .filter_map(|entry| {
+                    if let Ok(file) = entry {
+                        let file = file.path();
+                        let filename = file.to_str()?;
+                        let filestem = file.file_stem()?.to_str()?.to_string();
+                        if file
+                            .extension()
+                            .map_or(false, |s| s.to_str() == Some("ron"))
+                        {
+                            Some((
+                                filestem,
+                                world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| {
+                                    loader.load(filename, RonFormat, &mut counter)
+                                }),
+                            ))
+                        } else {
+                            None
+                        }
                     } else {
                         None
                     }
-                } else {
-                    None
-                }
-            })
-            .collect();
-        world.insert(reg);
-    }
+                })
+                .collect();
+            world.insert(reg);
+        }
     }
     counter
 }

@@ -4,6 +4,7 @@ Prefab(
         PrefabEntity(
             data: BackgroundPrefab(
                 position: TransformAdapterPrefab(pos3d: (0.0, 0.0, -0.01), scale: 3.0),
+                background: Background,
             )
         ),
     ],

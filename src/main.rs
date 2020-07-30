@@ -63,6 +63,11 @@ fn main() -> amethyst::Result<()> {
         )
         .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with(
+            systems::BackgroundRepeatSystem,
+            "background_repeat_system",
+            &["player_system"],
+        )
+        .with(
             systems::EnemyMovementSystem,
             "enemy_movement_system",
             &["player_system"],

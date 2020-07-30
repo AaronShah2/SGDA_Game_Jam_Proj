@@ -1,7 +1,10 @@
 // neccesary imports
 use crate::{
-    resources::{prefabs::{CharacterPrefabRegistry, BackgroundPrefabRegistry},
-    sprites::SpriteSheetRegister, ResourceRegistry},
+    resources::{
+        prefabs::{BackgroundPrefabRegistry, CharacterPrefabRegistry},
+        sprites::SpriteSheetRegister,
+        ResourceRegistry,
+    },
     utils::delete_hierarchy,
 };
 use amethyst::{
@@ -125,11 +128,11 @@ impl GameplayState {
             .find(world, "background")
             .expect("Couldn't find background prefab");
         self.background = Some(
-                world
-                    .create_entity()
-                    .with(sprite_render)
-                    .with(background_prefab)
-                    .build(),
+            world
+                .create_entity()
+                .with(sprite_render)
+                .with(background_prefab)
+                .build(),
         );
     }
 }

@@ -8,6 +8,7 @@ use amethyst::{
 pub enum Controls {
     Arrows,
     Wasd,
+    Ijkl,
 }
 impl Default for Controls {
     fn default() -> Self {
@@ -20,6 +21,7 @@ impl Controls {
         match self {
             Controls::Arrows => "Controls: Arrow keys",
             Controls::Wasd => "Controls: WASD",
+            Controls::Ijkl => "Controls: IJKL",
         }
     }
 
@@ -28,7 +30,8 @@ impl Controls {
     pub fn successor(&self) -> Self {
         match self {
             Controls::Arrows => Controls::Wasd,
-            Controls::Wasd => Controls::Arrows,
+            Controls::Wasd => Controls::Ijkl,
+            Controls::Ijkl => Controls::Arrows,
         }
     }
 
@@ -41,6 +44,7 @@ impl Controls {
         match self {
             Controls::Arrows => set_arrows_bindings(bindings),
             Controls::Wasd => set_wasd_bindings(bindings),
+            Controls::Ijkl => set_ijkl_bindings(bindings),
         }
     }
 }
@@ -84,6 +88,28 @@ fn set_wasd_bindings(bindings: &mut Bindings<StringBindings>) {
             Axis::Emulated {
                 pos: Button::Key(VirtualKeyCode::D),
                 neg: Button::Key(VirtualKeyCode::A),
+            },
+        )
+        .expect("error binding controls");
+}
+
+/// Gets the bindings for ijkl controls
+fn set_ijkl_bindings(bindings: &mut Bindings<StringBindings>) {
+    bindings
+        .insert_axis(
+            "vertical",
+            Axis::Emulated {
+                pos: Button::Key(VirtualKeyCode::I),
+                neg: Button::Key(VirtualKeyCode::K),
+            },
+        )
+        .expect("error binding controls");
+    bindings
+        .insert_axis(
+            "horizontal",
+            Axis::Emulated {
+                pos: Button::Key(VirtualKeyCode::L),
+                neg: Button::Key(VirtualKeyCode::J),
             },
         )
         .expect("error binding controls");

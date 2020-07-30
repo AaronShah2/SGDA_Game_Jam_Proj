@@ -8,7 +8,7 @@ use amethyst::{
 use nalgebra::base::Vector3;
 
 const MOVE_SPEED: f32 = 10.0f32;
-const AREA_WIDTH: f32 = 600.0f32;
+const AREA_WIDTH: f32 = 760.0f32;
 
 #[derive(SystemDesc)]
 pub struct PlayerSystem;

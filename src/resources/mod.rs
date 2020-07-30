@@ -13,6 +13,14 @@ pub trait ResourceRegistry {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct QuitToMenu(pub bool);
+impl Default for QuitToMenu {
+    fn default() -> Self {
+        QuitToMenu(false)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Paused {
     Paused,
     Unpaused,

@@ -1,6 +1,9 @@
 // neccesary imports
 use crate::{
-    resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
+    resources::{
+        prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, QuitToMenu,
+        ResourceRegistry,
+    },
     states::PauseState,
     utils::delete_hierarchy,
 };
@@ -25,6 +28,7 @@ impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         self.init_player(data.world);
         self.init_enemy(data.world);
+        data.world.insert(QuitToMenu(false));
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -36,7 +40,7 @@ impl SimpleState for GameplayState {
     /// - Any other keypress is simply logged to the console.
     fn handle_event(
         &mut self,
-        mut _data: StateData<'_, GameData<'_, '_>>,
+        data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
         if let StateEvent::Window(event) = &event {
@@ -57,6 +61,11 @@ impl SimpleState for GameplayState {
             // If you're looking for a more sophisticated event handling solution,
             // including key bindings and gamepad support, please have a look at
             // https://book.amethyst.rs/stable/pong-tutorial/pong-tutorial-03.html#capturing-user-input
+        }
+
+        if *data.world.read_resource::<QuitToMenu>() == QuitToMenu(true) {
+            *data.world.write_resource::<QuitToMenu>() = QuitToMenu(false);
+            return Trans::Pop;
         }
 
         // Keep going

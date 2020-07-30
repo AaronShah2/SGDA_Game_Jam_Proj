@@ -1,8 +1,11 @@
-use crate::components::{Enemy, Player};
+use crate::{
+    components::{Enemy, Player},
+    resources::Paused,
+};
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
-    ecs::{Join, ReadStorage, System, SystemData, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
 };
 
 const MOVE_SPEED: f32 = 9.0;
@@ -14,9 +17,13 @@ impl<'s> System<'s> for EnemyMovementSystem {
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Player>,
         ReadStorage<'s, Enemy>,
+        Read<'s, Paused>,
     );
 
-    fn run(&mut self, (mut transforms, players, enemies): Self::SystemData) {
+    fn run(&mut self, (mut transforms, players, enemies, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
         if let Some(player_position) = (&players, &transforms)
             .join()
             .next()
@@ -43,9 +50,13 @@ impl<'s> System<'s> for EnemyCollisionSystem {
         ReadStorage<'s, Transform>,
         ReadStorage<'s, Player>,
         ReadStorage<'s, Enemy>,
+        Read<'s, Paused>,
     );
 
-    fn run(&mut self, (transforms, players, enemies): Self::SystemData) {
+    fn run(&mut self, (transforms, players, enemies, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
         for ((_, player_transform), (_, enemy_transform)) in
             (&players, &transforms).join().flat_map(|p| {
                 (&enemies, &transforms)

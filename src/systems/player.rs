@@ -1,4 +1,4 @@
-use crate::components::Player;
+use crate::{components::Player, resources::Paused};
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
@@ -18,9 +18,13 @@ impl<'s> System<'s> for PlayerSystem {
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Player>,
         Read<'s, InputHandler<StringBindings>>,
+        Read<'s, Paused>,
     );
 
-    fn run(&mut self, (mut transforms, players, input): Self::SystemData) {
+    fn run(&mut self, (mut transforms, players, input, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
         for (player, transform) in (&players, &mut transforms).join() {
             // unwraps elements from inputs.ron
             let horizontal = input.axis_value("horizontal").unwrap_or(0.0);

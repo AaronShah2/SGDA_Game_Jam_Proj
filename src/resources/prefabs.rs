@@ -145,7 +145,10 @@ impl super::ResourceRegistry for BackgroundPrefabRegistry {
     }
 }
 impl BackgroundPrefabRegistry {
-    pub fn find_sans_world(&self, name: &str) -> Option<<Self as super::ResourceRegistry>::ResourceType> {
+    pub fn find_sans_world(
+        &self,
+        name: &str,
+    ) -> Option<<Self as super::ResourceRegistry>::ResourceType> {
         self.prefabs.get(name).cloned()
     }
 }

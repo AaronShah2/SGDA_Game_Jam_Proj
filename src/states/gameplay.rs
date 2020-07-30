@@ -1,10 +1,7 @@
 // neccesary imports
 use crate::{
-    resources::{
-        prefabs::{BackgroundPrefabRegistry, CharacterPrefabRegistry},
-        sprites::SpriteSheetRegister,
-        ResourceRegistry,
-    },
+    resources::{prefabs::CharacterPrefabRegistry, sprites::SpriteSheetRegister, ResourceRegistry},
+    states::PauseState,
     utils::delete_hierarchy,
 };
 use amethyst::{
@@ -49,7 +46,7 @@ impl SimpleState for GameplayState {
             }
             // Check if the player presses escape
             if is_key_down(&event, VirtualKeyCode::Escape) {
-                return Trans::Pop;
+                return Trans::Push(Box::new(PauseState::default()));
             }
 
             // Listen to any key events

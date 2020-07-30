@@ -11,3 +11,14 @@ pub trait ResourceRegistry {
     /// Get the requested resource matching the given name
     fn find(&self, world: &World, name: &str) -> Option<Self::ResourceType>;
 }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Paused {
+    Paused,
+    Unpaused,
+}
+impl Default for Paused {
+    fn default() -> Self {
+        Paused::Unpaused
+    }
+}

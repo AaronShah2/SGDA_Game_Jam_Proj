@@ -1,0 +1,48 @@
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "pause",
+        anchor: Middle,
+        stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: true),
+        width: 500,
+        height: 500,
+    ),
+    children: [
+        Label(
+            transform: (
+                id: "title",
+                x: 0.0,
+                y: -100.0,
+                z: 1.0,
+                width: 500.0,
+                height: 100.0,
+                anchor: TopMiddle,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "Paused",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 100.0,
+                color: (1., 1., 1., 1.),
+            ),
+        ),
+        Label(
+            transform: (
+                id: "subtext",
+                x: 0.0,
+                y: 50.0,
+                z: 1.0,
+                width: 500.0,
+                height: 36.0,
+                anchor: BottomMiddle,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "Press Escape to unpause",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 36.0,
+                color: (1., 1., 1., 1.),
+            ),
+        ),
+    ],
+)

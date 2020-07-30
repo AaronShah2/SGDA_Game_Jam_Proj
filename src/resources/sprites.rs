@@ -20,6 +20,9 @@ impl super::ResourceRegistry for SpriteSheetRegister {
 }
 impl SpriteSheetRegister {
     pub fn find_sprite(&self, world: &World, name: &str, index: usize) -> Option<SpriteRender> {
+        self.find_sprite_sans_world(&*world.read_resource::<AssetStorage<SpriteSheet>>(), name, index)
+    }
+    pub fn find_sprite_sans_world(&self, sprite_sheet_storage: &AssetStorage<SpriteSheet>, name: &str, index: usize) -> Option<SpriteRender> {
         self.sprite_sheets.get(name).map_or_else(
             || {
                 warn!(
@@ -35,8 +38,7 @@ impl SpriteSheetRegister {
                 None
             },
             |sprite_sheet| {
-                let sheet_length = world
-                    .read_resource::<AssetStorage<SpriteSheet>>()
+                let sheet_length = sprite_sheet_storage
                     .get(&sprite_sheet)?
                     .sprites
                     .len();

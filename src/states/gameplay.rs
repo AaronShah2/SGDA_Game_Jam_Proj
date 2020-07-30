@@ -23,13 +23,11 @@ pub struct GameplayState {
 
 const PLAYER_SHEET_ID: &str = "Gamer";
 const ENEMY_SHEET_ID: &str = "walkRight";
-const BG_SHEET_ID: &str = "BG";
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         self.init_player(data.world);
         self.init_enemy(data.world);
-        self.init_bg(data.world);
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -116,23 +114,5 @@ impl GameplayState {
         if let Some(background) = self.background.take() {
             delete_hierarchy(world, background);
         }
-    }
-
-    fn init_bg(&mut self, world: &mut World) {
-        let sprite_render = world
-            .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, BG_SHEET_ID, 0)
-            .unwrap_or_else(|| panic!("Couldn't find spritesheet {}", BG_SHEET_ID));
-        let background_prefab = world
-            .read_resource::<BackgroundPrefabRegistry>()
-            .find(world, "background")
-            .expect("Couldn't find background prefab");
-        self.background = Some(
-            world
-                .create_entity()
-                .with(sprite_render)
-                .with(background_prefab)
-                .build(),
-        );
     }
 }

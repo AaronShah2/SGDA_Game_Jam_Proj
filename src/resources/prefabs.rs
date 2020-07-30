@@ -144,6 +144,11 @@ impl super::ResourceRegistry for BackgroundPrefabRegistry {
         self.prefabs.get(name).cloned()
     }
 }
+impl BackgroundPrefabRegistry {
+    pub fn find_sans_world(&self, name: &str) -> Option<<Self as super::ResourceRegistry>::ResourceType> {
+        self.prefabs.get(name).cloned()
+    }
+}
 
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut counter = ProgressCounter::new();

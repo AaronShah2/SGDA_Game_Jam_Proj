@@ -26,7 +26,7 @@ pub struct GameplayState {
     car: Option<Entity>,
 }
 
-const PLAYER_SHEET_ID: &str = "Gamer";
+const PLAYER_SHEET_ID: &str = "gamer";
 const ENEMY_SHEET_ID: &str = "walkRight";
 const MUD_SHEET_ID: &str = "mud";
 const CAR_SHEET_ID: &str = "car";

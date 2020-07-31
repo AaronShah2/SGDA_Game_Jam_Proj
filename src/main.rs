@@ -68,6 +68,7 @@ fn main() -> amethyst::Result<()> {
         )
         .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with(systems::PlayerCollisionSystem, "player_col_system",&["player_system"])
+        .with(systems::ScoreTrackingSystem, "score_system", &["player_system"])
         .with(
             systems::BackgroundRepeatSystem,
             "background_repeat_system",

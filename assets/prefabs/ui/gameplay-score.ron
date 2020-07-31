@@ -1,0 +1,19 @@
+#![enable(implicit_some)]
+Label(
+    transform: (
+        id: "gameplay-score",
+        x: -150.0,
+        y: -50.0,
+        z: 0.25,
+        width: 300.0,
+        height: 45.0,
+        anchor: TopRight,
+        mouse_reactive: false,
+    ),
+    text: (
+        text: "Distance: 0.00 m",
+        font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+        font_size: 40.0,
+        color: (1.0, 1.0, 1.0, 1.0),
+    ),
+)

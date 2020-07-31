@@ -1,16 +1,16 @@
 // neccesary imports
 use crate::{
     resources::{
-        prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry},
+        prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry, UiPrefabRegistry},
         sprites::SpriteSheetRegister,
-        QuitToMenu, ResourceRegistry,
+        QuitToMenu, ResourceRegistry, HighScore, GameplayScoreDisplay,
     },
     states::PauseState,
     utils::delete_hierarchy,
 };
 use amethyst::{
     ecs::Entity,
-    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode}, // input?
+    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode},
     prelude::*,
 };
 
@@ -19,7 +19,7 @@ use amethyst::{
 pub struct GameplayState {
     player: Option<Entity>,
     enemy: Option<Entity>,
-    background: Option<Entity>,
+    score: Option<Entity>,
 
     // to be deleted
     mud: Option<Entity>,
@@ -35,12 +35,14 @@ impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         self.init_player(data.world);
         self.init_enemy(data.world);
+        self.init_score(data.world);
 
         //TO BE DELETED 
         //self.init_mud(data.world);
         self.init_car(data.world);
 
         data.world.insert(QuitToMenu(false));
+        data.world.write_resource::<HighScore>().reset();
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -129,8 +131,12 @@ impl GameplayState {
         if let Some(enemy) = self.enemy.take() {
             delete_hierarchy(world, enemy);
         }
-        if let Some(background) = self.background.take() {
-            delete_hierarchy(world, background);
+        if let Some(score) = self.score.take() {
+            delete_hierarchy(world, score);
+            let displays = &mut world.write_resource::<GameplayScoreDisplay>().displays;
+            if let Some(index) = displays.iter().position(|&e| e == score) {
+                displays.remove(index);
+            }
         }
 
         // TO BE DELETED
@@ -176,5 +182,15 @@ impl GameplayState {
                 .with(car_prefab)
                 .build(),
         );
+    }
+
+    fn init_score(&mut self, world: &mut World) {
+        let prefab = world.read_resource::<UiPrefabRegistry>().find(world, "gameplay-score").expect("Couldn't load gameplay score prefab");
+        self.score = Some(
+            world.create_entity()
+                .with(prefab)
+                .build()
+        );
+        world.write_resource::<GameplayScoreDisplay>().displays.push(self.score.unwrap());
     }
 }

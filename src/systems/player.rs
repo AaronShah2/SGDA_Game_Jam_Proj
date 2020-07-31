@@ -37,19 +37,18 @@ impl<'s> System<'s> for PlayerSystem {
             // lets player move
             let movement = Vector3::new(horizontal, vertical, 0.0f32);
             if movement.norm_squared() != 0.0 {
-                transform.prepend_translation(movement.normalize() * (player.speed));
-                transform.translation_mut().x =
-                    transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
-                transform.translation_mut().y = transform.translation().y;
-                // handles car collision
-                if player.isInCar {
-                    for (car,) in (&cars,).join() {
-                        transform.translation_mut().x =
-                            transform.translation().x.max(-(car.width)).min(car.width);
-                        transform.translation_mut().y =
-                            transform.translation().y.max(-(car.height)).min(car.height);
-                    }
+                // if no car collisions, moves, normally
+                if !player.is_in_car {
+                    transform.prepend_translation(movement.normalize() * (player.speed));
+
+                } else {
+                    // moves player back if they are in a car
+                    transform.prepend_translation(-(movement.normalize()*(player.speed)*3.0));
                 }
+
+                // sets area boundaries
+                transform.translation_mut().x =
+                transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
             }
 
             // test function, need to remove
@@ -61,7 +60,6 @@ impl<'s> System<'s> for PlayerSystem {
     }
 }
 
-const COLLISION_RADIUS: f32 = 120.0;
 #[derive(SystemDesc)]
 pub struct PlayerCollisionSystem;
 
@@ -88,10 +86,10 @@ impl<'s> System<'s> for PlayerCollisionSystem {
                 //log::info!("x: {}, y: {}", x, y);
                 // checks if within boundaries
                 if x >= -(car.width) && x <= car.width && y >= -(car.height) && y <= car.height {
-                    // log::info!("You are in the car-zone.");
-                    player.isInCar = true;
+                    log::info!("You are in the car-zone.");
+                    player.is_in_car = true;
                 } else {
-                    player.isInCar = false;
+                    player.is_in_car = false;
                 }
             }
         }

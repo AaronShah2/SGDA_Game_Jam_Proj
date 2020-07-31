@@ -16,8 +16,8 @@ pub struct Car{
 impl Car {
     pub fn new() -> Self {
         Car { 
-            height: 40f32,
-            width: 40f32,
+            height: 100f32,
+            width: 100f32,
         }
     }
 
@@ -25,6 +25,12 @@ impl Car {
     pub fn deactivate_hitbox(&mut self) {
         self.height = 0f32;
         self.width = 0f32;
+    }
+}
+
+impl Default for Car {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -29,6 +29,17 @@ impl<'s> System<'s> for PlayerSystem {
         if *paused == Paused::Paused {
             return;
         }
+        // finds car area & location
+        let mut car_x_min = 0.0f32;
+        let mut car_x_max= 0.0f32;
+        let mut car_y_min= 0.0f32;
+        let mut car_y_max= 0.0f32;
+        for (car, transform) in (&cars, &mut transforms).join() {
+            car_x_min = transform.translation().x - (car.width*1.1);
+            car_x_max = transform.translation().x + (car.width*1.1);
+            car_y_min = transform.translation().y - (car.height*1.1);
+            car_y_max = transform.translation().y + (car.height*1.1);
+        }
         for (player, transform) in (&players, &mut transforms).join() {
             // unwraps elements from inputs.ron
             let horizontal = input.axis_value("horizontal").unwrap_or(0.0);
@@ -40,15 +51,21 @@ impl<'s> System<'s> for PlayerSystem {
                 // if no car collisions, moves, normally
                 if !player.is_in_car {
                     transform.prepend_translation(movement.normalize() * (player.speed));
-
                 } else {
                     // moves player back if they are in a car
-                    transform.prepend_translation(-(movement.normalize()*(player.speed)*3.0));
+                    while 
+                        transform.translation().x > car_x_min &&
+                        transform.translation().x < car_x_max &&
+                        transform.translation().y > car_y_min &&
+                        transform.translation().y < car_y_max
+                    {
+                        transform.prepend_translation(-(movement.normalize()*(player.speed)));
+                    }
                 }
 
                 // sets area boundaries
                 transform.translation_mut().x =
-                transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
+                    transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
             }
 
             // test function, need to remove

@@ -2,7 +2,7 @@
 
 use crate::{
     resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
-    states::{GameplayState, OptionsState},
+    states::{CutsceneState, OptionsState},
     utils::delete_hierarchy,
 };
 use amethyst::{
@@ -36,7 +36,7 @@ impl SimpleState for MenuState {
             }) => {
                 if self.start_button.map_or(false, |button| button == target) {
                     // Start Button: Transitions to next scene
-                    Trans::Push(Box::new(GameplayState::default()))
+                    Trans::Push(Box::new(CutsceneState::default()))
                 } else if self.options_button.map_or(false, |button| button == target) {
                     // Options Button: Transition to options screen
                     Trans::Push(Box::new(OptionsState::default()))

@@ -1,0 +1,67 @@
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "irc_line",
+        anchor: TopMiddle,
+        x: 0.0,
+        y: -100.0,
+        width: 1200,
+        height: 100,
+    ),
+    children: [
+        Label(
+            transform: (
+                id: "timestamp",
+                x: 50.0,
+                y: -40.0,
+                z: 10.0,
+                width: 100.0,
+                height: 20.0,
+                anchor: TopLeft,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "HH:MM:SS",
+                font: File("fonts/FreeMono.ttf", ("TTF", ())),
+                font_size: 20.0,
+                color: (1.0, 1.0, 1.0, 1.0),
+            ),
+        ),
+        Label(
+            transform: (
+                id: "author",
+                x: 150.0,
+                y: -40.0,
+                z: 10.0,
+                width: 100.0,
+                height: 20.0,
+                anchor: TopLeft,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "AUTHOR",
+                font: File("fonts/FreeMono.ttf", ("TTF", ())),
+                font_size: 20.0,
+                color: (1.0, 1.0, 1.0, 1.0),
+            ),
+        ),
+        Label(
+            transform: (
+                id: "message",
+                x: 250.0,
+                y: -40.0,
+                z: 10.0,
+                width: 500.0,
+                height: 60.0,
+                anchor: TopLeft,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "MESSAGE",
+                font: File("fonts/FreeMono.ttf", ("TTF", ())),
+                font_size: 20.0,
+                color: (1.0, 1.0, 1.0, 1.0),
+            ),
+        ),
+    ],
+)

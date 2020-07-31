@@ -16,8 +16,8 @@ pub struct Car{
 impl Car {
     pub fn new() -> Self {
         Car { 
-            height: 100f32,
-            width: 100f32,
+            height: 140f32,
+            width: 210f32,
         }
     }
 

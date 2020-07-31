@@ -23,7 +23,7 @@ impl<'s> System<'s> for MudSystem {
         Read<'s, Paused>,
     );
 
-    //TODO: Fix collision hitbox, slow down enemy
+    //TODO: Fix collision hitbox
     fn run(&mut self, (transforms, mut players, mut enemies, mud, paused): Self::SystemData) {
         // Pauses game
         if *paused == Paused::Paused {

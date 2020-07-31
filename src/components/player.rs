@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 #[prefab(Component)]
 pub struct Player {
     pub speed: f32,
+    pub isInCar: bool,
 }
 
 impl Player {
@@ -32,7 +33,10 @@ impl Player {
     }
 
     pub fn new() -> Self {
-        Player { speed: 10.0f32 }
+        Player { 
+            speed: 10.0f32,
+            isInCar: false,
+        }
     }
 }
 impl Default for Player {

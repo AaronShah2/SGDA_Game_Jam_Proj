@@ -18,10 +18,10 @@ impl<'s> System<'s> for PlayerSystem {
         ReadStorage<'s, Player>,
         Read<'s, InputHandler<StringBindings>>,
         Read<'s, Paused>,
-        WriteStorage<'s, Car>
+        ReadStorage<'s, Car>
     );
 
-    fn run(&mut self, (mut transforms, players, input, paused, mut cars): Self::SystemData) {
+    fn run(&mut self, (mut transforms, players, input, paused, cars): Self::SystemData) {
         if *paused == Paused::Paused {
             return;
         }
@@ -35,7 +35,20 @@ impl<'s> System<'s> for PlayerSystem {
             if movement.norm_squared() != 0.0 {
                 transform.prepend_translation(movement.normalize() * (player.speed));
                 transform.translation_mut().x =
-                    transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH)
+                    transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
+                transform.translation_mut().y =
+                    transform.translation().y;
+                // handles car collision
+                if player.isInCar {
+                    for (car,) in (&cars,).join() {
+                    transform.translation_mut().x =
+                    transform.translation()
+                        .x.max(-(car.width)).min(car.width);
+                    transform.translation_mut().y =
+                    transform.translation()
+                        .y.max(-(car.height)).min(car.height);
+                    }
+                }
                 
             }
 
@@ -48,35 +61,60 @@ impl<'s> System<'s> for PlayerSystem {
     }
 }
 
-const COLLISION_RADIUS: f32 = 9.0;
+const COLLISION_RADIUS: f32 = 120.0;
 #[derive(SystemDesc)]
 pub struct PlayerCollisionSystem;
 
 impl<'s> System<'s> for PlayerCollisionSystem {
     type SystemData = (
-        ReadStorage<'s, Transform>,
-        ReadStorage<'s, Player>,
+        WriteStorage<'s, Transform>,
+        WriteStorage<'s, Player>,
         ReadStorage<'s, Car>,
         Read<'s, Paused>,
     );
 
-    fn run(&mut self, (transforms, players, cars, paused): Self::SystemData) {
+    fn run(&mut self, (transforms, mut players, cars, paused): Self::SystemData) {
         if *paused == Paused::Paused {
             return;
         }
-        for ((_, player_transform), (car, car_transform)) in
-            (&players, &transforms).join().flat_map(|p| {
-                (&cars, &transforms)
-                    .join()
-                    .map(|e| (p, e))
-                    .collect::<Vec<_>>()
-            })
-        {
-            if (player_transform.translation() - car_transform.translation()).norm()
-                <= COLLISION_RADIUS
-            {
-                log::info!("Collision between player and Car");
+        for (player, player_transform) in (&mut players, &transforms).join() {
+            for (car, car_transform) in (&cars, &transforms).join() {
+                // log::info!("player_coor: {}, Car_coor: {}",
+                // player_transform.translation(), car_transform.translation());
+
+                // keeps track of distance between car and player
+                let x = player_transform.translation().x - car_transform.translation().x;
+                let y = player_transform.translation().y - car_transform.translation().y;
+                //log::info!("x: {}, y: {}", x, y);
+                // checks if within boundaries
+                if x>= -(car.width) && x<= car.width
+                    && y >= -(car.height) && y<= car.height
+                {
+                    // log::info!("You are in the car-zone.");
+                    player.isInCar = true;
+                }
+                else {
+                    player.isInCar = false;
+                }
+                
             }
         }
+
+        // for ((_, player_transform), (car, car_transform)) in
+        //     (&players, &transforms).join().flat_map(|p| {
+        //         (&cars, &transforms)
+        //             .join()
+        //             .map(|e| (p, e))
+        //             .collect::<Vec<_>>()
+        //     })
+        // {
+        //     log::info!("player_coor: {}, Car_coor: {}",
+        //     player_transform.translation(), car_transform.translation());
+        //     if (player_transform.translation() - car_transform.translation()).norm()
+        //         <= COLLISION_RADIUS
+        //     {
+                
+        //     }
+        // }
     }
 }

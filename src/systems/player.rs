@@ -1,4 +1,7 @@
-use crate::{components::{Player, Car}, resources::Paused};
+use crate::{
+    components::{Car, Player},
+    resources::Paused,
+};
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
@@ -13,12 +16,13 @@ const AREA_WIDTH: f32 = 760.0f32;
 pub struct PlayerSystem;
 
 impl<'s> System<'s> for PlayerSystem {
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Player>,
         Read<'s, InputHandler<StringBindings>>,
         Read<'s, Paused>,
-        ReadStorage<'s, Car>
+        ReadStorage<'s, Car>,
     );
 
     fn run(&mut self, (mut transforms, players, input, paused, cars): Self::SystemData) {
@@ -36,20 +40,16 @@ impl<'s> System<'s> for PlayerSystem {
                 transform.prepend_translation(movement.normalize() * (player.speed));
                 transform.translation_mut().x =
                     transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
-                transform.translation_mut().y =
-                    transform.translation().y;
+                transform.translation_mut().y = transform.translation().y;
                 // handles car collision
                 if player.isInCar {
                     for (car,) in (&cars,).join() {
-                    transform.translation_mut().x =
-                    transform.translation()
-                        .x.max(-(car.width)).min(car.width);
-                    transform.translation_mut().y =
-                    transform.translation()
-                        .y.max(-(car.height)).min(car.height);
+                        transform.translation_mut().x =
+                            transform.translation().x.max(-(car.width)).min(car.width);
+                        transform.translation_mut().y =
+                            transform.translation().y.max(-(car.height)).min(car.height);
                     }
                 }
-                
             }
 
             // test function, need to remove
@@ -87,16 +87,12 @@ impl<'s> System<'s> for PlayerCollisionSystem {
                 let y = player_transform.translation().y - car_transform.translation().y;
                 //log::info!("x: {}, y: {}", x, y);
                 // checks if within boundaries
-                if x>= -(car.width) && x<= car.width
-                    && y >= -(car.height) && y<= car.height
-                {
+                if x >= -(car.width) && x <= car.width && y >= -(car.height) && y <= car.height {
                     // log::info!("You are in the car-zone.");
                     player.isInCar = true;
-                }
-                else {
+                } else {
                     player.isInCar = false;
                 }
-                
             }
         }
 
@@ -113,7 +109,7 @@ impl<'s> System<'s> for PlayerCollisionSystem {
         //     if (player_transform.translation() - car_transform.translation()).norm()
         //         <= COLLISION_RADIUS
         //     {
-                
+
         //     }
         // }
     }

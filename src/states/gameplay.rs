@@ -3,7 +3,7 @@ use crate::{
     resources::{
         prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry, UiPrefabRegistry},
         sprites::SpriteSheetRegister,
-        QuitToMenu, ResourceRegistry, HighScore, GameplayScoreDisplay,
+        GameplayScoreDisplay, HighScore, QuitToMenu, ResourceRegistry,
     },
     states::PauseState,
     utils::delete_hierarchy,
@@ -23,7 +23,7 @@ pub struct GameplayState {
 
     // to be deleted
     mud: Option<Entity>,
-    car: Option<Entity>
+    car: Option<Entity>,
 }
 
 const PLAYER_SHEET_ID: &str = "Gamer";
@@ -37,7 +37,7 @@ impl SimpleState for GameplayState {
         self.init_enemy(data.world);
         self.init_score(data.world);
 
-        //TO BE DELETED 
+        //TO BE DELETED
         //self.init_mud(data.world);
         self.init_car(data.world);
 
@@ -185,12 +185,14 @@ impl GameplayState {
     }
 
     fn init_score(&mut self, world: &mut World) {
-        let prefab = world.read_resource::<UiPrefabRegistry>().find(world, "gameplay-score").expect("Couldn't load gameplay score prefab");
-        self.score = Some(
-            world.create_entity()
-                .with(prefab)
-                .build()
-        );
-        world.write_resource::<GameplayScoreDisplay>().displays.push(self.score.unwrap());
+        let prefab = world
+            .read_resource::<UiPrefabRegistry>()
+            .find(world, "gameplay-score")
+            .expect("Couldn't load gameplay score prefab");
+        self.score = Some(world.create_entity().with(prefab).build());
+        world
+            .write_resource::<GameplayScoreDisplay>()
+            .displays
+            .push(self.score.unwrap());
     }
 }

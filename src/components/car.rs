@@ -8,14 +8,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
-pub struct Car{
+pub struct Car {
     pub height: f32,
     pub width: f32,
 }
 
 impl Car {
     pub fn new() -> Self {
-        Car { 
+        Car {
             height: 140f32,
             width: 210f32,
         }

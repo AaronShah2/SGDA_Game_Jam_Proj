@@ -115,6 +115,7 @@ impl BackgroundRepeatSystem {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     /// Place a new background down if the player is too close to the top
     fn place_needed_top_backgrounds<'s>(
         &self,
@@ -158,6 +159,7 @@ impl BackgroundRepeatSystem {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     /// Place a new background down if the player is too close to the bottom
     fn place_needed_bottom_backgrounds<'s>(
         &self,

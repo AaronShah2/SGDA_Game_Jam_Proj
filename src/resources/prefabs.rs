@@ -127,7 +127,6 @@ impl<'a> PrefabData<'a> for TransformAdapterPrefab {
     }
 }
 
-
 #[derive(Copy, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct PlayerPrefab;
 impl<'a> PrefabData<'a> for PlayerPrefab {
@@ -135,12 +134,12 @@ impl<'a> PrefabData<'a> for PlayerPrefab {
     type Result = ();
 
     fn add_to_entity(
-            &self,
-            entity: Entity,
-            players: &mut Self::SystemData,
-            _entities: &[Entity],
-            _children: &[Entity],
-        ) -> Result<Self::Result, Error> {
+        &self,
+        entity: Entity,
+        players: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
         players.insert(entity, Player::default())?;
         Ok(())
     }
@@ -153,12 +152,12 @@ impl<'a> PrefabData<'a> for EnemyPrefab {
     type Result = ();
 
     fn add_to_entity(
-            &self,
-            entity: Entity,
-            enemies: &mut Self::SystemData,
-            _entities: &[Entity],
-            _children: &[Entity],
-        ) -> Result<Self::Result, Error> {
+        &self,
+        entity: Entity,
+        enemies: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
         enemies.insert(entity, Enemy::default())?;
         Ok(())
     }
@@ -171,12 +170,12 @@ impl<'a> PrefabData<'a> for CarPrefab {
     type Result = ();
 
     fn add_to_entity(
-            &self,
-            entity: Entity,
-            enemies: &mut Self::SystemData,
-            _entities: &[Entity],
-            _children: &[Entity],
-        ) -> Result<Self::Result, Error> {
+        &self,
+        entity: Entity,
+        enemies: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
         enemies.insert(entity, Car::default())?;
         Ok(())
     }

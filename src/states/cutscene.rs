@@ -1,5 +1,5 @@
 use crate::{
-    resources::{ResourceRegistry, prefabs::UiPrefabRegistry},
+    resources::{prefabs::UiPrefabRegistry, ResourceRegistry},
     states::GameplayState,
     utils,
 };
@@ -8,19 +8,34 @@ use amethyst::{
     ecs::Entity,
     input::{self, VirtualKeyCode},
     prelude::*,
-    ui::{UiTransform, UiText},
+    ui::{UiText, UiTransform},
 };
 
 const DIALOG_LINE_TIME: f64 = 1.0;
 
 const IRC_DIALOG: [(&str, &str, &str, [f32; 4]); 7] = [
-    ("14:32:13", "Avaritia", "PLACEHOLDER", [0.0, 0.676, 0.0, 1.0]),
+    (
+        "14:32:13",
+        "Avaritia",
+        "PLACEHOLDER",
+        [0.0, 0.676, 0.0, 1.0],
+    ),
     ("14:32:14", "AeonSlayer1979", "yeah", [0.676, 0.0, 0.0, 1.0]),
     ("14:32:14", "AeonSlayer1979", "hey", [0.676, 0.0, 0.0, 1.0]),
-    ("14:32:14", "AeonSlayer1979", "wanna meet irl", [0.676, 0.0, 0.0, 1.0]),
+    (
+        "14:32:14",
+        "AeonSlayer1979",
+        "wanna meet irl",
+        [0.676, 0.0, 0.0, 1.0],
+    ),
     ("14:32:14", "Avaritia", "sure", [0.0, 0.676, 0.0, 1.0]),
     ("14:32:15", "Avaritia", "where at", [0.0, 0.676, 0.0, 1.0]),
-    ("14:32:15", "AeonSlayer1979", "you can come over to my place", [0.676, 0.0, 0.0, 1.0]),
+    (
+        "14:32:15",
+        "AeonSlayer1979",
+        "you can come over to my place",
+        [0.676, 0.0, 0.0, 1.0],
+    ),
 ];
 
 const IRC_ROW_ID: &str = "irc_line";
@@ -38,10 +53,10 @@ pub struct CutsceneState {
 
 impl SimpleState for CutsceneState {
     fn handle_event(
-            &mut self,
-            _data: StateData<'_, GameData<'_, '_>>,
-            event: StateEvent,
-        ) -> SimpleTrans {
+        &mut self,
+        _data: StateData<'_, GameData<'_, '_>>,
+        event: StateEvent,
+    ) -> SimpleTrans {
         match event {
             StateEvent::Window(event) => {
                 if input::is_key_down(&event, VirtualKeyCode::Escape) {
@@ -55,7 +70,7 @@ impl SimpleState for CutsceneState {
     }
 
     fn fixed_update(&mut self, mut data: StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
-        self.time += 1.0/60.0;
+        self.time += 1.0 / 60.0;
         if self.time > DIALOG_LINE_TIME * self.dialog_number as f64 {
             if self.dialog_number < 7 {
                 let (time, speaker, line, author_color) = IRC_DIALOG[self.dialog_number];
@@ -82,29 +97,53 @@ impl CutsceneState {
     }
 
     /// Display a new line of IRC
-    fn render_irc_dialog(&mut self, data: &mut StateData<GameData>, time: &str, speaker: &str, line: &str, author_color: [f32; 4]) {
-        let prefab = data.world.read_resource::<UiPrefabRegistry>().find(&data.world, IRC_ROW_ID).expect("Couldn't fiund prefab for IRC line");
+    fn render_irc_dialog(
+        &mut self,
+        data: &mut StateData<GameData>,
+        time: &str,
+        speaker: &str,
+        line: &str,
+        author_color: [f32; 4],
+    ) {
+        let prefab = data
+            .world
+            .read_resource::<UiPrefabRegistry>()
+            .find(&data.world, IRC_ROW_ID)
+            .expect("Couldn't fiund prefab for IRC line");
         let new_line = data.world.create_entity().with(prefab).build();
         data.data.update(&data.world);
         // Change the text and colors to match this specific line
         let uitext_storage = &mut data.world.write_storage::<UiText>();
-        let num_descendants = data.world.read_resource::<ParentHierarchy>()
+        let num_descendants = data
+            .world
+            .read_resource::<ParentHierarchy>()
             .all_children_iter(new_line)
             .map(|entity| {
-                match data.world.read_storage::<UiTransform>().get(entity).map(|e| &e.id) {
+                match data
+                    .world
+                    .read_storage::<UiTransform>()
+                    .get(entity)
+                    .map(|e| &e.id)
+                {
                     Some(label) if label == TIMESTAMP_LABEL => {
-                        let text = uitext_storage.get_mut(entity).expect("Timestamp has no UiText");
+                        let text = uitext_storage
+                            .get_mut(entity)
+                            .expect("Timestamp has no UiText");
                         text.text = time.to_string();
-                    },
+                    }
                     Some(label) if label == AUTHOR_LABEL => {
-                        let text = uitext_storage.get_mut(entity).expect("Timestamp has no UiText");
+                        let text = uitext_storage
+                            .get_mut(entity)
+                            .expect("Timestamp has no UiText");
                         text.text = speaker.to_string();
                         text.color = author_color;
-                    },
+                    }
                     Some(label) if label == MESSAGE_LABEL => {
-                        let text = uitext_storage.get_mut(entity).expect("Timestamp has no UiText");
+                        let text = uitext_storage
+                            .get_mut(entity)
+                            .expect("Timestamp has no UiText");
                         text.text = line.to_string();
-                    },
+                    }
                     label => log::info!("Did nothing to entity {:?}", label),
                 }
             })

@@ -33,7 +33,7 @@ impl Player {
     }
 
     pub fn new() -> Self {
-        Player { 
+        Player {
             speed: 10.0f32,
             isInCar: false,
         }

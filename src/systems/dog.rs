@@ -50,11 +50,77 @@ impl<'s> System<'s> for DogSystem {
             {
                 transform.prepend_translation(-(movement.normalize()) * (dog.speed));
             }
-
-
             // sets area boundaries
             transform.translation_mut().x =
             transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
+        }
+    }
+}
+
+// checks collision system for dog class
+#[derive(SystemDesc)]
+pub struct DogCollisionSystem;
+
+impl<'s> System<'s> for DogCollisionSystem {
+#[allow(clippy::type_complexity)]
+    type SystemData = (
+        WriteStorage<'s, Transform>,
+        WriteStorage<'s, Dog>,
+        ReadStorage<'s, Player>,
+        Read<'s, Paused>,
+    );
+    fn run(&mut self, (transforms, mut dogs, player, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
+        for (dog, dog_transform) in (&mut dogs, &transforms).join() {
+            for (player, player_transform) in (&player, &transforms).join() {
+                // log::info!("player_coor: {}, dog_coor: {}",
+                // player_transform.translation(), dog_transform.translation());
+
+                // keeps track of distance between dog and player
+                let x = player_transform.translation().x - dog_transform.translation().x;
+                let y = player_transform.translation().y - dog_transform.translation().y;
+                //log::info!("x: {}, y: {}", x, y);
+                // checks if within boundaries
+                if x >= -(dog.width) && x <= dog.width && y >= -(dog.height) && y <= dog.height {
+                    log::info!("You are in the dog-zone.");
+                    dog.is_player_touching = true;
+                } else {
+                    dog.is_player_touching = false;
+                }
+            }
+        }
+    }
+}
+
+// attack system for dog
+#[derive(SystemDesc)]
+pub struct DogAttackSystem;
+
+impl<'s> System<'s> for DogAttackSystem {
+#[allow(clippy::type_complexity)]
+    type SystemData = (
+        ReadStorage<'s, Dog>,
+        WriteStorage<'s, Player>,
+        Read<'s, Paused>,
+    );
+    fn run(&mut self, (dogs, mut players, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
+        for (dog,) in (&dogs,).join() {
+            for (player,) in (&mut players,).join() {
+                if dog.is_player_touching {
+                    player.stop();
+                }
+                else 
+                {
+                    if player.speed == 0.0 {
+                        player.normal_speed();
+                    }
+                }
+            }
         }
     }
 }

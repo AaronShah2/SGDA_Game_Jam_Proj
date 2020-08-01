@@ -19,9 +19,9 @@ impl Dog {
     pub fn new() -> Self {
         Dog {
             is_player_touching: false,
-            height: 0.0f32,
-            width: 0.0f32,
-            speed: 20.0f32,
+            height: 80.0f32,
+            width: 80.0f32,
+            speed: 5.0f32,
         }
     }
 }

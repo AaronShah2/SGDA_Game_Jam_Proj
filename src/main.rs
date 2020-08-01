@@ -92,6 +92,16 @@ fn main() -> amethyst::Result<()> {
             "enemy_collision_system",
             &["player_system", "enemy_movement_system"],
         )
+        .with(
+            systems::DogCollisionSystem,
+            "dog_collision_system",
+            &["player_system"],
+        )
+        .with(
+            systems::DogAttackSystem,
+            "dog_attack_system",
+            &["player_system"],
+        )
         .with(systems::MudSystem, "mud_system", &["player_system"])
         .with(systems::DogSystem, "dog_system", &["player_system"]);
 

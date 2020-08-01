@@ -10,4 +10,4 @@ pub use enemy::{EnemyCollisionSystem, EnemyMovementSystem};
 pub use mud::MudSystem;
 pub use player::{PlayerCollisionSystem, PlayerSystem};
 pub use score_tracking::ScoreTrackingSystem;
-pub use dog::DogSystem;
+pub use dog::{DogSystem, DogCollisionSystem, DogAttackSystem};

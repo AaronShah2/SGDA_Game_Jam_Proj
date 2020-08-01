@@ -6,7 +6,7 @@ use amethyst::{
 
 use std::{iter::Cycle, vec::IntoIter};
 
-const SOUNDTRACK: &'static [&'static str] = &["audio/BeepBox-Song.wav"];
+const SOUNDTRACK: &[&str] = &["audio/BeepBox-Song.wav"];
 
 pub struct Music {
     pub music: Cycle<IntoIter<SourceHandle>>,

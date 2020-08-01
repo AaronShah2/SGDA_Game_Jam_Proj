@@ -13,11 +13,12 @@ use amethyst::{
 
 const DIALOG_LINE_TIME: f64 = 1.0;
 
-const IRC_DIALOG: [(&str, &str, &str, [f32; 4]); 7] = [
+const IRC_DIALOG: &[(&str, &str, &str, [f32; 4])] = &[
+    ("14:32:13", "Avaritia", "gg", [0.0, 0.676, 0.0, 1.0]),
     (
         "14:32:13",
         "Avaritia",
-        "PLACEHOLDER",
+        "always fun to play against you",
         [0.0, 0.676, 0.0, 1.0],
     ),
     ("14:32:14", "AeonSlayer1979", "yeah", [0.676, 0.0, 0.0, 1.0]),
@@ -48,8 +49,7 @@ const MESSAGE_LABEL: &str = "message";
 pub struct CutsceneState {
     time: f64,
     dialog_number: usize,
-    entites: Vec<Entity>,
-    to_update: bool,
+    entities: Vec<Entity>,
 }
 
 impl SimpleState for CutsceneState {
@@ -73,13 +73,19 @@ impl SimpleState for CutsceneState {
     fn fixed_update(&mut self, mut data: StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
         self.time += 1.0 / 60.0;
         if self.time > DIALOG_LINE_TIME * self.dialog_number as f64 {
-            if self.dialog_number < 7 {
-                let (time, speaker, line, author_color) = IRC_DIALOG[self.dialog_number];
-                self.render_irc_dialog(&mut data, time, speaker, line, author_color);
+            if self.dialog_number < IRC_DIALOG.len() {
+                self.add_irc_dialog(&mut data);
             }
             self.dialog_number += 1;
         }
         data.data.update(&data.world);
+        self.update_text(&mut data);
+        Trans::None
+    }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        data.data.update(&data.world);
+        self.update_text(data);
         Trans::None
     }
 
@@ -89,43 +95,26 @@ impl SimpleState for CutsceneState {
 }
 
 impl CutsceneState {
-    /// Despawn all entities produced by this
-    fn deinit_entities(&mut self, world: &mut World) {
-        for entity in self.entites.drain(..) {
-            utils::delete_hierarchy(world, entity);
-        }
-    }
-
-    /// Display a new line of IRC
-    fn render_irc_dialog(
-        &mut self,
-        data: &mut StateData<GameData>,
-        time: &str,
-        speaker: &str,
-        line: &str,
-        author_color: [f32; 4],
-    ) {
-        let prefab = data
-            .world
-            .read_resource::<UiPrefabRegistry>()
-            .find(data.world, IRC_ROW_ID)
-            .expect("Couldn't fiund prefab for IRC line");
-        let new_line = data.world.create_entity().with(prefab.clone()).build();
-        data.data.update(&data.world);
-        self.to_update = true;
-        // Change the text and colors to match this specific line
+    fn update_text(&mut self, data: &mut StateData<GameData>) {
         let uitext_storage = &mut data.world.write_storage::<UiText>();
-        let num_descendants = data
-            .world
-            .read_resource::<ParentHierarchy>()
-            .all_children_iter(new_line)
-            .map(|entity| {
-                match data
-                    .world
-                    .read_storage::<UiTransform>()
-                    .get(entity)
-                    .map(|e| &e.id)
-                {
+        let mut transform_storage = data.world.write_storage::<UiTransform>();
+        let parents = data.world.read_resource::<ParentHierarchy>();
+        self.entities
+            .iter()
+            .zip(IRC_DIALOG.iter())
+            .enumerate()
+            .flat_map(|(i, (&e, line))| {
+                if let Some(transform) = transform_storage.get_mut(e) {
+                    transform.local_y = -(i as f32 + 2.0) * 40.0;
+                }
+                parents
+                    .all_children_iter(e)
+                    .map(move |entity| (entity, line))
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .for_each(|(entity, (time, speaker, line, author_color))| {
+                match transform_storage.get(entity).map(|e| &e.id) {
                     Some(label) if label == TIMESTAMP_LABEL => {
                         let text = uitext_storage
                             .get_mut(entity)
@@ -137,7 +126,7 @@ impl CutsceneState {
                             .get_mut(entity)
                             .expect("Timestamp has no UiText");
                         text.text = speaker.to_string();
-                        text.color = author_color;
+                        text.color = *author_color;
                     }
                     Some(label) if label == MESSAGE_LABEL => {
                         let text = uitext_storage
@@ -147,16 +136,25 @@ impl CutsceneState {
                     }
                     label => log::info!("Did nothing to entity {:?}", label),
                 }
-            })
-            .count();
-        let prefab_storage = data
+            });
+    }
+
+    /// Despawn all entities produced by this
+    fn deinit_entities(&mut self, world: &mut World) {
+        for entity in self.entities.drain(..) {
+            utils::delete_hierarchy(world, entity);
+        }
+    }
+
+    /// Display a new line of IRC
+    fn add_irc_dialog(&mut self, data: &mut StateData<GameData>) {
+        let prefab = data
             .world
-            .read_resource::<amethyst::assets::AssetStorage<amethyst::ui::UiPrefab>>();
-        let prefab = prefab_storage.get(&prefab).unwrap();
-        log::info!(
-            "Set up an IRC row with {} entities from prefab: {:?}",
-            num_descendants,
-            prefab.entities().collect::<Vec<_>>()
-        );
+            .read_resource::<UiPrefabRegistry>()
+            .find(data.world, IRC_ROW_ID)
+            .expect("Couldn't find prefab for IRC line");
+        let new_line = data.world.create_entity().with(prefab.clone()).build();
+        data.data.update(&data.world);
+        self.entities.push(new_line);
     }
 }

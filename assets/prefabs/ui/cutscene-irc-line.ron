@@ -30,10 +30,10 @@ Container(
         Label(
             transform: (
                 id: "author",
-                x: 150.0,
+                x: 185.0,
                 y: -40.0,
                 z: 10.0,
-                width: 100.0,
+                width: 180.0,
                 height: 20.0,
                 anchor: TopLeft,
                 mouse_reactive: false,
@@ -43,12 +43,13 @@ Container(
                 font: File("fonts/FreeMono.ttf", ("TTF", ())),
                 font_size: 20.0,
                 color: (1.0, 1.0, 1.0, 1.0),
+                align: MiddleRight,
             ),
         ),
         Label(
             transform: (
                 id: "message",
-                x: 250.0,
+                x: 530.0,
                 y: -40.0,
                 z: 10.0,
                 width: 500.0,
@@ -61,6 +62,7 @@ Container(
                 font: File("fonts/FreeMono.ttf", ("TTF", ())),
                 font_size: 20.0,
                 color: (1.0, 1.0, 1.0, 1.0),
+                align: MiddleLeft,
             ),
         ),
     ],

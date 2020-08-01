@@ -1,6 +1,6 @@
 // dog obj that stops player and enemy
 use crate::{
-    components::{Dog, Player},
+    components::{Dog, Player, Enemy},
     resources::Paused,
 };
 use amethyst::{
@@ -67,14 +67,15 @@ impl<'s> System<'s> for DogCollisionSystem {
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Dog>,
         ReadStorage<'s, Player>,
+        ReadStorage<'s, Enemy>,
         Read<'s, Paused>,
     );
-    fn run(&mut self, (transforms, mut dogs, player, paused): Self::SystemData) {
+    fn run(&mut self, (transforms, mut dogs, players, enemies, paused): Self::SystemData) {
         if *paused == Paused::Paused {
             return;
         }
         for (dog, dog_transform) in (&mut dogs, &transforms).join() {
-            for (player, player_transform) in (&player, &transforms).join() {
+            for (player, player_transform) in (&players, &transforms).join() {
                 // log::info!("player_coor: {}, dog_coor: {}",
                 // player_transform.translation(), dog_transform.translation());
 
@@ -90,6 +91,22 @@ impl<'s> System<'s> for DogCollisionSystem {
                     dog.is_player_touching = false;
                 }
             }
+            for (enemy, enemy_transform) in (&enemies, &transforms).join() {
+                // log::info!("player_coor: {}, dog_coor: {}",
+                // player_transform.translation(), dog_transform.translation());
+
+                // keeps track of distance between dog and player
+                let x = enemy_transform.translation().x - dog_transform.translation().x;
+                let y = enemy_transform.translation().y - dog_transform.translation().y;
+                //log::info!("x: {}, y: {}", x, y);
+                // checks if within boundaries
+                if x >= -(dog.width) && x <= dog.width && y >= -(dog.height) && y <= dog.height {
+                    log::info!("You are in the dog-zone.");
+                    dog.is_enemy_touching = true;
+                } else {
+                    dog.is_enemy_touching = false;
+                }
+            }
         }
     }
 }
@@ -103,9 +120,10 @@ impl<'s> System<'s> for DogAttackSystem {
     type SystemData = (
         ReadStorage<'s, Dog>,
         WriteStorage<'s, Player>,
+        WriteStorage<'s, Enemy>,
         Read<'s, Paused>,
     );
-    fn run(&mut self, (dogs, mut players, paused): Self::SystemData) {
+    fn run(&mut self, (dogs, mut players, mut enemies, paused): Self::SystemData) {
         if *paused == Paused::Paused {
             return;
         }
@@ -118,6 +136,17 @@ impl<'s> System<'s> for DogAttackSystem {
                 {
                     if player.speed == 0.0 {
                         player.normal_speed();
+                    }
+                }
+            }
+            for (enemy,) in (&mut enemies,).join() {
+                if dog.is_enemy_touching {
+                    enemy.stop();
+                }
+                else 
+                {
+                    if enemy.speed == 0.0 {
+                        enemy.normal_speed();
                     }
                 }
             }

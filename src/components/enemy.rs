@@ -12,11 +12,11 @@ const RUBBER_BAND_COEFFICIENT: f32 = 0.01;
 #[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
 pub struct Enemy {
-    speed: f32,
+    pub speed: f32,
 }
 impl Enemy {
     pub fn new() -> Self {
-        Enemy { speed: 10.0f32 }
+        Enemy { speed: 8.0f32 }
     }
     //slows enemy down
     pub fn slow_down(&mut self) {
@@ -31,6 +31,12 @@ impl Enemy {
     //doubles speed
     pub fn speed_up(&mut self) {
         self.speed = 18.0f32;
+    }
+
+    //Stops enemy
+    pub fn stop(&mut self)
+    {
+        self.speed = 0.0f32;
     }
 
     pub fn speed(&self, distance: f32) -> f32 {

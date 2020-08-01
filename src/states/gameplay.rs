@@ -37,7 +37,7 @@ impl SimpleState for GameplayState {
                 .fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         );
-        
+
         data.world.insert(QuitToMenu(false));
         data.world.write_resource::<HighScore>().reset();
     }

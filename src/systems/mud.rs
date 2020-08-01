@@ -49,7 +49,6 @@ impl<'s> System<'s> for MudSystem {
                 let x = enemy_transform.translation().x - mud_transform.translation().x;
                 let y = enemy_transform.translation().y - mud_transform.translation().y;
 
-                
                 // checks if within boundaries
                 if x >= -(mud.width) && x <= mud.width && y >= -(mud.height) && y <= mud.height {
                     mud.is_enemy_touching = true;

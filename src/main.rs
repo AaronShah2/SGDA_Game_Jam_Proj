@@ -112,11 +112,7 @@ fn main() -> amethyst::Result<()> {
             "dog_collision_system",
             &["player_system"],
         )
-        .with(
-            systems::CarSystem,
-            "car_system",
-            &["player_system"]
-        )
+        .with(systems::CarSystem, "car_system", &["player_system"])
         /*
         .with(
             systems::DogAttackSystem,

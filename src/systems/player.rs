@@ -1,5 +1,5 @@
 use crate::{
-    components::{Car, Player, Dog, Mud},
+    components::{Car, Dog, Mud, Player},
     resources::Paused,
 };
 use amethyst::{
@@ -54,9 +54,7 @@ impl<'s> System<'s> for PlayerSystem {
                 if !player.is_in_car {
                     // player movement
                     transform.prepend_translation(movement.normalize() * (player.speed));
-                    
                 } else {
-                    
                     // moves player back if they are in a car
                     while transform.translation().x > car_x_min
                         && transform.translation().x < car_x_max
@@ -85,6 +83,7 @@ impl<'s> System<'s> for PlayerSystem {
 pub struct PlayerCollisionSystem;
 
 impl<'s> System<'s> for PlayerCollisionSystem {
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteStorage<'s, Player>,
         ReadStorage<'s, Car>,
@@ -126,16 +125,14 @@ impl<'s> System<'s> for PlayerCollisionSystem {
                 player.stop();
             } else if hit_by_mud {
                 player.slow_down();
-            }
-            else {
+            } else {
                 player.normal_speed();
             }
 
             // checks if player hit by car
             if hit_by_car {
                 player.is_in_car = true;
-            }
-            else {
+            } else {
                 player.is_in_car = false;
             }
         }

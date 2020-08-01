@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[prefab(Component)]
-pub struct Mud{
+pub struct Mud {
     pub is_player_touching: bool,
     pub is_enemy_touching: bool,
     pub height: f32,

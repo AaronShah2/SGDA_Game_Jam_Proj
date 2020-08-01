@@ -153,7 +153,7 @@ impl CutsceneState {
             .read_resource::<UiPrefabRegistry>()
             .find(data.world, IRC_ROW_ID)
             .expect("Couldn't find prefab for IRC line");
-        let new_line = data.world.create_entity().with(prefab.clone()).build();
+        let new_line = data.world.create_entity().with(prefab).build();
         data.data.update(&data.world);
         self.entities.push(new_line);
     }

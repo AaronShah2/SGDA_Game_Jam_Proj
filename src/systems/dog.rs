@@ -119,16 +119,14 @@ impl<'s> System<'s> for DogAttackSystem {
                 if dog.is_player_touching || is_player_touching {
                     is_player_touching = true;
                     player.stop();
-                } 
-                else if player.speed == 0.0 {
+                } else if player.speed == 0.0 {
                     player.normal_speed();
                 }
             }
             for (enemy,) in (&mut enemies,).join() {
                 if dog.is_enemy_touching {
                     enemy.stop();
-                }
-                else if enemy.speed == 0.0 {
+                } else if enemy.speed == 0.0 {
                     enemy.normal_speed();
                 }
             }

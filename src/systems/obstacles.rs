@@ -1,5 +1,5 @@
 use crate::{
-    components::{Dog, Mud, Car, Player},
+    components::{Car, Dog, Mud, Player},
     resources::{
         prefabs::{ObstaclePrefab, ObstaclePrefabRegistry},
         sprites::SpriteSheetRegister,
@@ -110,19 +110,13 @@ impl<'s> System<'s> for ObstacleRandomizationSystem {
         } else {
             // The player is gone, so remove all obstacles
             for (mud, _) in (&entities, &muds).join() {
-                entities
-                    .delete(mud)
-                    .expect("Error removing mud");
+                entities.delete(mud).expect("Error removing mud");
             }
             for (car, _) in (&entities, &cars).join() {
-                entities
-                    .delete(car)
-                    .expect("Error removing car");
+                entities.delete(car).expect("Error removing car");
             }
             for (dog, _) in (&entities, &dogs).join() {
-                entities
-                    .delete(dog)
-                    .expect("Error removing dog");
+                entities.delete(dog).expect("Error removing dog");
             }
         }
     }
@@ -139,12 +133,8 @@ impl ObstacleRandomizationSystem {
         player_position: &Vector3<f32>,
     ) {
         for (mud, _, mud_position) in (entities, muds, transforms).join() {
-            if (player_position - mud_position.translation()).norm()
-                > 4.0 * BACKGROUND_HEIGHT
-            {
-                entities
-                    .delete(mud)
-                    .expect("Error removing mud");
+            if (player_position - mud_position.translation()).norm() > 4.0 * BACKGROUND_HEIGHT {
+                entities.delete(mud).expect("Error removing mud");
             }
         }
     }
@@ -157,12 +147,8 @@ impl ObstacleRandomizationSystem {
         player_position: &Vector3<f32>,
     ) {
         for (car, _, car_position) in (entities, cars, transforms).join() {
-            if (player_position - car_position.translation()).norm()
-                > 4.0 * BACKGROUND_HEIGHT
-            {
-                entities
-                    .delete(car)
-                    .expect("Error removing car");
+            if (player_position - car_position.translation()).norm() > 4.0 * BACKGROUND_HEIGHT {
+                entities.delete(car).expect("Error removing car");
             }
         }
     }
@@ -175,12 +161,8 @@ impl ObstacleRandomizationSystem {
         player_position: &Vector3<f32>,
     ) {
         for (dog, _, dog_position) in (entities, dogs, transforms).join() {
-            if (player_position - dog_position.translation()).norm()
-                > 4.0 * BACKGROUND_HEIGHT
-            {
-                entities
-                    .delete(dog)
-                    .expect("Error removing dog");
+            if (player_position - dog_position.translation()).norm() > 4.0 * BACKGROUND_HEIGHT {
+                entities.delete(dog).expect("Error removing dog");
             }
         }
     }
@@ -210,12 +192,12 @@ impl ObstacleRandomizationSystem {
             let mut rng = rand::thread_rng();
 
             // randomly generates y coordinate
-            let y_rng:f32 = rng.gen();
+            let y_rng: f32 = rng.gen();
             let y_pos = max_height + (y_rng * BACKGROUND_HEIGHT);
 
             // randomly generates x coordinates
-            let x_rng:f32 = rng.gen();
-            let x_pos:f32 = (x_rng * BACKGROUND_WIDTH) - (BACKGROUND_WIDTH/2.0);
+            let x_rng: f32 = rng.gen();
+            let x_pos: f32 = (x_rng * BACKGROUND_WIDTH) - (BACKGROUND_WIDTH / 2.0);
 
             let sprite_render = spritesheet_registry
                 .find_sprite_sans_world(&*spritesheet_storage, "mud", 0)
@@ -264,12 +246,12 @@ impl ObstacleRandomizationSystem {
             let mut rng = rand::thread_rng();
 
             // randomly generates y coordinate
-            let y_rng:f32 = rng.gen();
+            let y_rng: f32 = rng.gen();
             let y_pos = max_height + (y_rng * BACKGROUND_HEIGHT);
 
             // randomly generates x coordinates
-            let x_rng:f32 = rng.gen();
-            let x_pos:f32 = (x_rng * BACKGROUND_WIDTH) - (BACKGROUND_WIDTH/2.0);
+            let x_rng: f32 = rng.gen();
+            let x_pos: f32 = (x_rng * BACKGROUND_WIDTH) - (BACKGROUND_WIDTH / 2.0);
 
             let sprite_render = spritesheet_registry
                 .find_sprite_sans_world(&*spritesheet_storage, "car", 0)
@@ -318,13 +300,12 @@ impl ObstacleRandomizationSystem {
             let mut rng = rand::thread_rng();
 
             // randomly generates y coordinate
-            let y_rng:f32 = rng.gen();
+            let y_rng: f32 = rng.gen();
             let y_pos = max_height + (y_rng * BACKGROUND_HEIGHT);
 
             // randomly generates x coordinates
-            let x_rng:f32 = rng.gen();
-            let x_pos:f32 = max_height + (x_rng * BACKGROUND_WIDTH) 
-            - (BACKGROUND_WIDTH/2.0);
+            let x_rng: f32 = rng.gen();
+            let x_pos: f32 = max_height + (x_rng * BACKGROUND_WIDTH) - (BACKGROUND_WIDTH / 2.0);
 
             let sprite_render = spritesheet_registry
                 .find_sprite_sans_world(&*spritesheet_storage, "dog", 0)

@@ -1,5 +1,5 @@
 use crate::{
-    components::{Enemy, Player, Mud, Dog},
+    components::{Dog, Enemy, Mud, Player},
     resources::{CollisionEvent, Paused},
 };
 use amethyst::{
@@ -120,8 +120,7 @@ impl<'s> System<'s> for EnemyObjectCollisionSystem {
                 enemy.stop();
             } else if hit_by_mud {
                 enemy.slow_down();
-            }
-            else {
+            } else {
                 enemy.normal_speed();
             }
         }

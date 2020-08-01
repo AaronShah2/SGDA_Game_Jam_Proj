@@ -9,7 +9,6 @@ use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
 };
 
-const COLLISION_RADIUS: f32 = 120.0;
 #[derive(SystemDesc)]
 pub struct MudSystem;
 
@@ -17,39 +16,45 @@ impl<'s> System<'s> for MudSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadStorage<'s, Transform>,
-        WriteStorage<'s, Player>,
-        WriteStorage<'s, Enemy>,
-        ReadStorage<'s, Mud>,
+        WriteStorage<'s, Mud>,
+        ReadStorage<'s, Player>,
+        ReadStorage<'s, Enemy>,
         Read<'s, Paused>,
     );
 
     //TODO: Fix collision hitbox
-    fn run(&mut self, (transforms, mut players, mut enemies, mud, paused): Self::SystemData) {
+    fn run(&mut self, (transforms, mut muds, players, enemies, paused): Self::SystemData) {
         // Pauses game
         if *paused == Paused::Paused {
             return;
         }
-        // checks if player collides with mud
-        for (player, player_transform) in (&mut players, &transforms).join() {
-            for (_, mud_transform) in (&mud, &transforms).join() {
-                if (player_transform.translation() - mud_transform.translation()).norm()
-                    <= COLLISION_RADIUS
-                {
-                    player.slow_down();
+        for (mud, mud_transform) in (&mut muds, &transforms).join() {
+            for (_, player_transform) in (&players, &transforms).join() {
+                // log::info!("player_coor: {}, mud_coor: {}",
+                // player_transform.translation(), mud_transform.translation());
+
+                // keeps track of distance between mud and player
+                let x = player_transform.translation().x - mud_transform.translation().x;
+                let y = player_transform.translation().y - mud_transform.translation().y;
+
+                // checks if within boundaries
+                if x >= -(mud.width) && x <= mud.width && y >= -(mud.height) && y <= mud.height {
+                    mud.is_player_touching = true;
                 } else {
-                    player.normal_speed();
+                    mud.is_player_touching = false;
                 }
             }
-        }
-        // checks if enemy collides with mud
-        for (enemy, enemy_transform) in (&mut enemies, &transforms).join() {
-            for (_, mud_transform) in (&mud, &transforms).join() {
-                if (enemy_transform.translation() - mud_transform.translation()).norm()
-                    <= COLLISION_RADIUS
-                {
-                    enemy.slow_down();
+            for (_, enemy_transform) in (&enemies, &transforms).join() {
+                // keeps track of distance between mud and player
+                let x = enemy_transform.translation().x - mud_transform.translation().x;
+                let y = enemy_transform.translation().y - mud_transform.translation().y;
+
+                
+                // checks if within boundaries
+                if x >= -(mud.width) && x <= mud.width && y >= -(mud.height) && y <= mud.height {
+                    mud.is_enemy_touching = true;
                 } else {
-                    enemy.normal_speed();
+                    mud.is_enemy_touching = false;
                 }
             }
         }

@@ -1,5 +1,5 @@
 use crate::{
-    components::{Car, Player},
+    components::{Car, Player, Dog, Mud},
     resources::Paused,
 };
 use amethyst::{
@@ -29,16 +29,19 @@ impl<'s> System<'s> for PlayerSystem {
         if *paused == Paused::Paused {
             return;
         }
-        // finds car area & location
+
+        // finds car area & location of car impact
         let mut car_x_min = 0.0f32;
         let mut car_x_max = 0.0f32;
         let mut car_y_min = 0.0f32;
         let mut car_y_max = 0.0f32;
         for (car, transform) in (&cars, &mut transforms).join() {
-            car_x_min = transform.translation().x - (car.width * 1.1);
-            car_x_max = transform.translation().x + (car.width * 1.1);
-            car_y_min = transform.translation().y - (car.height * 1.1);
-            car_y_max = transform.translation().y + (car.height * 1.1);
+            if car.is_player_touching {
+                car_x_min = transform.translation().x - (car.width * 1.1);
+                car_x_max = transform.translation().x + (car.width * 1.1);
+                car_y_min = transform.translation().y - (car.height * 1.1);
+                car_y_max = transform.translation().y + (car.height * 1.1);
+            }
         }
         for (player, transform) in (&players, &mut transforms).join() {
             // unwraps elements from inputs.ron
@@ -48,10 +51,12 @@ impl<'s> System<'s> for PlayerSystem {
             // lets player move
             let movement = Vector3::new(horizontal, vertical, 0.0f32);
             if movement.norm_squared() != 0.0 {
-                // if no car collisions, moves, normally
                 if !player.is_in_car {
+                    // player movement
                     transform.prepend_translation(movement.normalize() * (player.speed));
+                    
                 } else {
+                    
                     // moves player back if they are in a car
                     while transform.translation().x > car_x_min
                         && transform.translation().x < car_x_max
@@ -81,33 +86,57 @@ pub struct PlayerCollisionSystem;
 
 impl<'s> System<'s> for PlayerCollisionSystem {
     type SystemData = (
-        WriteStorage<'s, Transform>,
         WriteStorage<'s, Player>,
         ReadStorage<'s, Car>,
+        ReadStorage<'s, Dog>,
+        ReadStorage<'s, Mud>,
         Read<'s, Paused>,
     );
 
-    fn run(&mut self, (transforms, mut players, cars, paused): Self::SystemData) {
+    fn run(&mut self, (mut players, cars, dogs, muds, paused): Self::SystemData) {
         if *paused == Paused::Paused {
             return;
         }
-        for (player, player_transform) in (&mut players, &transforms).join() {
-            for (car, car_transform) in (&cars, &transforms).join() {
-                // log::info!("player_coor: {}, Car_coor: {}",
-                // player_transform.translation(), car_transform.translation());
-
-                // keeps track of distance between car and player
-                let x = player_transform.translation().x - car_transform.translation().x;
-                let y = player_transform.translation().y - car_transform.translation().y;
-                //log::info!("x: {}, y: {}", x, y);
-                // checks if within boundaries
-                if x >= -(car.width) && x <= car.width && y >= -(car.height) && y <= car.height {
-                    log::info!("You are in the car-zone.");
-                    player.is_in_car = true;
-                } else {
-                    player.is_in_car = false;
+        for (player,) in (&mut players,).join() {
+            // checks if player is hit by car
+            let mut hit_by_car: bool = false;
+            for (car,) in (&cars,).join() {
+                if car.is_player_touching {
+                    hit_by_car = true;
                 }
-                log::info!("Player speed: {}", player.speed);
+            }
+            // checks if player is hit by dog
+            let mut hit_by_dog: bool = false;
+            for (dog,) in (&dogs,).join() {
+                if dog.is_player_touching {
+                    hit_by_dog = true;
+                }
+            }
+
+            // checks if player is hit by mud
+            let mut hit_by_mud: bool = false;
+            for (mud,) in (&muds,).join() {
+                if mud.is_player_touching {
+                    hit_by_mud = true;
+                }
+            }
+
+            // adjust player's speed bacsed on their collisions
+            if hit_by_dog {
+                player.stop();
+            } else if hit_by_mud {
+                player.slow_down();
+            }
+            else {
+                player.normal_speed();
+            }
+
+            // checks if player hit by car
+            if hit_by_car {
+                player.is_in_car = true;
+            }
+            else {
+                player.is_in_car = false;
             }
         }
 

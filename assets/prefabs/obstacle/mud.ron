@@ -3,7 +3,7 @@ Prefab(
     entities: [
         PrefabEntity(
             data: ObstaclePrefab(
-                mud: Mud,
+                mud: MudPrefab,
                 // mudposition: TransformAdapterPrefab(pos2d: (0.0, 500.0), scale: 40.0, layer: 0.5),
             ),
         ),

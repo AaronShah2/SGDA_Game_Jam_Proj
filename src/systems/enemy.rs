@@ -1,5 +1,5 @@
 use crate::{
-    components::{Enemy, Player},
+    components::{Enemy, Player, Mud, Dog},
     resources::{CollisionEvent, Paused},
 };
 use amethyst::{
@@ -78,6 +78,51 @@ impl<'s> System<'s> for EnemyCollisionSystem {
             {
                 log::info!("Collision between player and enemy");
                 collision_channel.single_write(CollisionEvent);
+            }
+        }
+    }
+}
+
+#[derive(SystemDesc)]
+pub struct EnemyObjectCollisionSystem;
+
+impl<'s> System<'s> for EnemyObjectCollisionSystem {
+    type SystemData = (
+        WriteStorage<'s, Enemy>,
+        ReadStorage<'s, Dog>,
+        ReadStorage<'s, Mud>,
+        Read<'s, Paused>,
+    );
+
+    fn run(&mut self, (mut enemies, dogs, muds, paused): Self::SystemData) {
+        if *paused == Paused::Paused {
+            return;
+        }
+        for (enemy,) in (&mut enemies,).join() {
+            // checks if enemy is hit by dog
+            let mut hit_by_dog: bool = false;
+            for (dog,) in (&dogs,).join() {
+                if dog.is_enemy_touching {
+                    hit_by_dog = true;
+                }
+            }
+
+            // checks if enemy is hit by mud
+            let mut hit_by_mud: bool = false;
+            for (mud,) in (&muds,).join() {
+                if mud.is_enemy_touching {
+                    hit_by_mud = true;
+                }
+            }
+
+            // adjust enemy's speed bacsed on their collisions
+            if hit_by_dog {
+                enemy.stop();
+            } else if hit_by_mud {
+                enemy.slow_down();
+            }
+            else {
+                enemy.normal_speed();
             }
         }
     }

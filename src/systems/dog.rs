@@ -70,33 +70,24 @@ impl<'s> System<'s> for DogCollisionSystem {
         }
         for (dog, dog_transform) in (&mut dogs, &transforms).join() {
             for (_, player_transform) in (&players, &transforms).join() {
-                // log::info!("player_coor: {}, dog_coor: {}",
-                // player_transform.translation(), dog_transform.translation());
-
                 // keeps track of distance between dog and player
                 let x = player_transform.translation().x - dog_transform.translation().x;
                 let y = player_transform.translation().y - dog_transform.translation().y;
-                //log::info!("x: {}, y: {}", x, y);
+
                 // checks if within boundaries
                 if x >= -(dog.width) && x <= dog.width && y >= -(dog.height) && y <= dog.height {
-                    log::info!("You are in the dog-zone.");
                     dog.is_player_touching = true;
-                    log::info!("is Player touching: {}", dog.is_player_touching)
                 } else {
                     dog.is_player_touching = false;
                 }
             }
             for (_, enemy_transform) in (&enemies, &transforms).join() {
-                // log::info!("player_coor: {}, dog_coor: {}",
-                // player_transform.translation(), dog_transform.translation());
-
                 // keeps track of distance between dog and player
                 let x = enemy_transform.translation().x - dog_transform.translation().x;
                 let y = enemy_transform.translation().y - dog_transform.translation().y;
-                //log::info!("x: {}, y: {}", x, y);
+
                 // checks if within boundaries
                 if x >= -(dog.width) && x <= dog.width && y >= -(dog.height) && y <= dog.height {
-                    log::info!("You are in the dog-zone.");
                     dog.is_enemy_touching = true;
                 } else {
                     dog.is_enemy_touching = false;
@@ -106,7 +97,7 @@ impl<'s> System<'s> for DogCollisionSystem {
     }
 }
 
-// attack system for dog
+// TODO: Delete System, now handled by player & enemy systems
 #[derive(SystemDesc)]
 pub struct DogAttackSystem;
 
@@ -128,7 +119,6 @@ impl<'s> System<'s> for DogAttackSystem {
                 if dog.is_player_touching || is_player_touching {
                     is_player_touching = true;
                     player.stop();
-                    log::info!("Player speed on dog: {}", player.speed);
                 } 
                 else if player.speed == 0.0 {
                     player.normal_speed();

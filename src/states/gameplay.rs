@@ -1,7 +1,7 @@
 // neccesary imports
 use crate::{
     resources::{
-        prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry, UiPrefabRegistry},
+        prefabs::{CharacterPrefabRegistry, UiPrefabRegistry},
         sprites::SpriteSheetRegister,
         CollisionEvent, GameplayScoreDisplay, HighScore, QuitToMenu, ResourceRegistry,
     },
@@ -22,18 +22,10 @@ pub struct GameplayState {
     enemy: Option<Entity>,
     score: Option<Entity>,
     reader: Option<ReaderId<CollisionEvent>>,
-
-    // to be deleted
-    mud: Option<Entity>,
-    car: Option<Entity>,
-    dog: Option<Entity>,
 }
 
 const PLAYER_SHEET_ID: &str = "gamer";
 const ENEMY_SHEET_ID: &str = "walkRight";
-const MUD_SHEET_ID: &str = "mud";
-const CAR_SHEET_ID: &str = "car";
-const DOG_SHEET_ID: &str = "dog";
 
 impl SimpleState for GameplayState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
@@ -45,12 +37,7 @@ impl SimpleState for GameplayState {
                 .fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         );
-
-        //TO BE DELETED
-        // self.init_mud(data.world);
-        // self.init_car(data.world);
-        // self.init_dog(data.world);
-
+        
         data.world.insert(QuitToMenu(false));
         data.world.write_resource::<HighScore>().reset();
     }
@@ -164,70 +151,6 @@ impl GameplayState {
                 displays.remove(index);
             }
         }
-
-        // TO BE DELETED
-        /*
-        if let Some(mud) = self.mud.take() {
-            delete_hierarchy(world, mud);
-        }
-        if let Some(car) = self.car.take() {
-            delete_hierarchy(world, car);
-        }
-        */
-    }
-
-    fn init_mud(&mut self, world: &mut World) {
-        let sprite_render = world
-            .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, MUD_SHEET_ID, 0)
-            .unwrap();
-        let mud_prefab = world
-            .read_resource::<ObstaclePrefabRegistry>()
-            .find(world, "mud")
-            .expect("Couldn't find mud prefab");
-        self.mud = Some(
-            world
-                .create_entity()
-                .with(sprite_render)
-                .with(mud_prefab)
-                .build(),
-        );
-    }
-
-    fn init_car(&mut self, world: &mut World) {
-        let sprite_render = world
-            .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, CAR_SHEET_ID, 0)
-            .unwrap();
-        let car_prefab = world
-            .read_resource::<ObstaclePrefabRegistry>()
-            .find(world, "car")
-            .expect("Couldn't find car prefab");
-        self.car = Some(
-            world
-                .create_entity()
-                .with(sprite_render)
-                .with(car_prefab)
-                .build(),
-        );
-    }
-
-    fn init_dog(&mut self, world: &mut World) {
-        let sprite_render = world
-            .read_resource::<SpriteSheetRegister>()
-            .find_sprite(world, DOG_SHEET_ID, 0)
-            .unwrap();
-        let dog_prefab = world
-            .read_resource::<ObstaclePrefabRegistry>()
-            .find(world, "dog")
-            .expect("Couldn't find dog prefab");
-        self.dog = Some(
-            world
-                .create_entity()
-                .with(sprite_render)
-                .with(dog_prefab)
-                .build(),
-        );
     }
 
     fn init_score(&mut self, world: &mut World) {

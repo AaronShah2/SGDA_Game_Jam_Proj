@@ -26,6 +26,42 @@ Container(
                 color: (1., 1., 1., 1.0),
             ),
         ),
+        Label(
+            transform: (
+                id: "high_score",
+                x: 0.0,
+                y: -60.0,
+                z: 1.0,
+                width: 500.0,
+                height: 100.0,
+                anchor: Middle,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "HIGH SCORE PLACEHOLDER",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 40.0,
+                color: (1., 1., 1., 1.0),
+            ),
+        ),
+        Label(
+            transform: (
+                id: "score",
+                x: 0.0,
+                y: 60.0,
+                z: 1.0,
+                width: 500.0,
+                height: 100.0,
+                anchor: Middle,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "SCORE PLACEHOLDER",
+                font: File("fonts/FreeSerif.ttf", ("TTF", ())),
+                font_size: 40.0,
+                color: (1., 1., 1., 1.0),
+            ),
+        ),
         Button(
             transform: (
                 id: "play_again",
@@ -44,8 +80,8 @@ Container(
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
                 hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 press_image: SolidColor(0.2, 0.2, 0.2, 1.),
-                normal_text_color: (0.2, 0.2, 0.2, 1.0),
-                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                normal_text_color: (1.0, 1.0, 1.0, 1.0),
+                hover_text_color: (1.0, 1.0, 1.0, 1.0),
                 press_text_color: (1.0, 1.0, 1.0, 1.0),
             )
         ),
@@ -67,8 +103,8 @@ Container(
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
                 hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 press_image: SolidColor(0.2, 0.2, 0.2, 1.),
-                normal_text_color: (0.2, 0.2, 0.2, 1.0),
-                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                normal_text_color: (1.0, 1.0, 1.0, 1.0),
+                hover_text_color: (1.0, 1.0, 1.0, 1.0),
                 press_text_color: (1.0, 1.0, 1.0, 1.0),
             )
         ),

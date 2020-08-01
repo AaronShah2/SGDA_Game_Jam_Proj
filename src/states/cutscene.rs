@@ -49,6 +49,7 @@ pub struct CutsceneState {
     time: f64,
     dialog_number: usize,
     entites: Vec<Entity>,
+    to_update: bool,
 }
 
 impl SimpleState for CutsceneState {
@@ -108,10 +109,11 @@ impl CutsceneState {
         let prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
-            .find(&data.world, IRC_ROW_ID)
+            .find(data.world, IRC_ROW_ID)
             .expect("Couldn't fiund prefab for IRC line");
-        let new_line = data.world.create_entity().with(prefab).build();
+        let new_line = data.world.create_entity().with(prefab.clone()).build();
         data.data.update(&data.world);
+        self.to_update = true;
         // Change the text and colors to match this specific line
         let uitext_storage = &mut data.world.write_storage::<UiText>();
         let num_descendants = data
@@ -148,7 +150,8 @@ impl CutsceneState {
                 }
             })
             .count();
-        log::info!("Set up an IRC row with {} entities", num_descendants);
-        self.entites.push(new_line);
+        let prefab_storage = data.world.read_resource::<amethyst::assets::AssetStorage<amethyst::ui::UiPrefab>>();
+        let prefab = prefab_storage.get(&prefab).unwrap();
+        log::info!("Set up an IRC row with {} entities from prefab: {:?}", num_descendants, prefab.entities().collect::<Vec<_>>());
     }
 }

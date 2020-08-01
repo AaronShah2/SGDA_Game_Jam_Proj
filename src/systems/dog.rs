@@ -81,6 +81,7 @@ impl<'s> System<'s> for DogCollisionSystem {
                 if x >= -(dog.width) && x <= dog.width && y >= -(dog.height) && y <= dog.height {
                     log::info!("You are in the dog-zone.");
                     dog.is_player_touching = true;
+                    log::info!("is Player touching: {}", dog.is_player_touching)
                 } else {
                     dog.is_player_touching = false;
                 }
@@ -121,18 +122,23 @@ impl<'s> System<'s> for DogAttackSystem {
         if *paused == Paused::Paused {
             return;
         }
+        let mut is_player_touching = false;
         for (dog,) in (&dogs,).join() {
             for (player,) in (&mut players,).join() {
-                if dog.is_player_touching {
+                if dog.is_player_touching || is_player_touching {
+                    is_player_touching = true;
                     player.stop();
-                } else if player.speed == 0.0 {
+                    log::info!("Player speed on dog: {}", player.speed);
+                } 
+                else if player.speed == 0.0 {
                     player.normal_speed();
                 }
             }
             for (enemy,) in (&mut enemies,).join() {
                 if dog.is_enemy_touching {
                     enemy.stop();
-                } else if enemy.speed == 0.0 {
+                }
+                else if enemy.speed == 0.0 {
                     enemy.normal_speed();
                 }
             }

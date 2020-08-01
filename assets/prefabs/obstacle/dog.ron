@@ -4,7 +4,7 @@ Prefab(
         PrefabEntity(
             data: ObstaclePrefab(
                 dog: DogPrefab,
-                dogposition: TransformAdapterPrefab(pos2d: (0.0, 200.0), scale: 10.0, layer: 0.5),
+                // dogposition: TransformAdapterPrefab(pos2d: (0.0, 200.0), scale: 10.0, layer: 0.5),
             ),
         ),
     ],

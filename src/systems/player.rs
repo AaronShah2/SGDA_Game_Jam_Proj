@@ -107,6 +107,7 @@ impl<'s> System<'s> for PlayerCollisionSystem {
                 } else {
                     player.is_in_car = false;
                 }
+                log::info!("Player speed: {}", player.speed);
             }
         }
 

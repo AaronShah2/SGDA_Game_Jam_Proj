@@ -4,7 +4,7 @@ Prefab(
         PrefabEntity(
             data: ObstaclePrefab(
                 car: CarPrefab,
-                carposition: TransformAdapterPrefab(pos2d: (0.0, 200.0), scale: 40.0, layer: 0.5),
+                // carposition: TransformAdapterPrefab(pos2d: (0.0, 200.0), scale: 40.0, layer: 0.5),
             ),
         ),
     ],

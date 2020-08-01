@@ -267,6 +267,15 @@ pub struct ObstaclePrefabRegistry {
     prefabs: HashMap<String, Handle<Prefab<ObstaclePrefab>>>,
 }
 
+impl ObstaclePrefabRegistry {
+    pub fn find_sans_world(
+        &self,
+        name: &str,
+    ) -> Option<<Self as super::ResourceRegistry>::ResourceType> {
+        self.prefabs.get(name).cloned()
+    }
+}
+
 impl super::ResourceRegistry for ObstaclePrefabRegistry {
     type ResourceType = Handle<Prefab<ObstaclePrefab>>;
 

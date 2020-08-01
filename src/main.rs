@@ -83,6 +83,11 @@ fn main() -> amethyst::Result<()> {
             &["player_system"],
         )
         .with(
+            systems::ObstacleRandomizationSystem,
+            "obstacle_randomization_system",
+            &["player_system"]
+        )
+        .with(
             systems::EnemyMovementSystem,
             "enemy_movement_system",
             &["player_system"],

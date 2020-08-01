@@ -47,9 +47,9 @@ impl SimpleState for GameplayState {
         );
 
         //TO BE DELETED
-        //self.init_mud(data.world);
-        self.init_car(data.world);
-        self.init_dog(data.world);
+        // self.init_mud(data.world);
+        // self.init_car(data.world);
+        // self.init_dog(data.world);
 
         data.world.insert(QuitToMenu(false));
         data.world.write_resource::<HighScore>().reset();
@@ -166,12 +166,14 @@ impl GameplayState {
         }
 
         // TO BE DELETED
+        /*
         if let Some(mud) = self.mud.take() {
             delete_hierarchy(world, mud);
         }
         if let Some(car) = self.car.take() {
             delete_hierarchy(world, car);
         }
+        */
     }
 
     fn init_mud(&mut self, world: &mut World) {

@@ -36,18 +36,32 @@ impl Default for Paused {
 
 const METERS_PER_DISTANCE_UNIT: f32 = 0.01;
 #[derive(Debug, Default)]
+/// A struct which tracks the current score and the high score
 pub struct HighScore {
     distance: f32,
+    max_distance: f32,
 }
 impl HighScore {
+    /// Given the distance traveled, update the current game's score
+    /// and the high score as necessary
     pub fn max(&mut self, distance: f32) {
         self.distance = self.distance.max(distance);
+        self.max_distance = self.max_distance.max(distance);
     }
 
+    /// Get the current game's score (the farthest traveled this game),
+    /// adjusted to meters.
     pub fn get_score(&self) -> f32 {
         self.distance * METERS_PER_DISTANCE_UNIT
     }
 
+    /// Get the high score, adjusted to meters.
+    pub fn get_high_score(&self) -> f32 {
+        self.max_distance * METERS_PER_DISTANCE_UNIT
+    }
+
+    /// Resets the score for the current game, while leaving the high
+    /// score unchanged
     pub fn reset(&mut self) {
         self.distance = 0.0;
     }

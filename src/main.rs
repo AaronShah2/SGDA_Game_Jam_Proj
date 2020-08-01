@@ -3,7 +3,7 @@
 // neccesary Amethest imports
 use amethyst::{
     assets::PrefabLoaderSystemDesc,
-    audio::AudioBundle,
+    audio::{AudioBundle, DjSystem},
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
     prelude::*,
@@ -41,6 +41,11 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(AudioBundle::default())?
+        .with(
+            DjSystem::new(|music: &mut resources::audio::Music| music.music.next()),
+            "dj",
+            &[],
+        )
         // testing out key configures
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
@@ -85,7 +90,7 @@ fn main() -> amethyst::Result<()> {
         .with(
             systems::ObstacleRandomizationSystem,
             "obstacle_randomization_system",
-            &["player_system"]
+            &["player_system"],
         )
         .with(
             systems::EnemyMovementSystem,

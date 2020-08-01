@@ -1,5 +1,7 @@
 use crate::{
-    resources::{prefabs::initialize_prefabs, sprites::initialize_sprite_sheets},
+    resources::{
+        audio::initialize_audio, prefabs::initialize_prefabs, sprites::initialize_sprite_sheets,
+    },
     states::MenuState,
 };
 
@@ -17,6 +19,7 @@ impl SimpleState for LoadingState {
         self.counters.push(initialize_prefabs(&mut data.world));
         self.counters
             .push(initialize_sprite_sheets(&mut data.world));
+        self.counters.push(initialize_audio(&mut data.world));
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {

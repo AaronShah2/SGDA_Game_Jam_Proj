@@ -16,7 +16,7 @@ pub struct Enemy {
 }
 impl Enemy {
     pub fn new() -> Self {
-        Enemy { speed: 8.0f32 }
+        Enemy { speed: 9.0f32 }
     }
     //slows enemy down
     pub fn slow_down(&mut self) {

@@ -139,8 +139,8 @@ impl BackgroundRepeatSystem {
         if max_height - player_position.y < BACKGROUND_HEIGHT {
             let y_pos = max_height + BACKGROUND_HEIGHT;
             let sprite_render = spritesheet_registry
-                .find_sprite_sans_world(&*spritesheet_storage, "BG", 0)
-                .unwrap_or_else(|| panic!("Couldn't find spritesheet BG"));
+                .find_sprite_sans_world(&*spritesheet_storage, "background", 0)
+                .unwrap_or_else(|| panic!("Couldn't find spritesheet background"));
             let background_prefab = prefab_registry
                 .find_sans_world("background")
                 .expect("Couldn't find background prefab");
@@ -153,7 +153,7 @@ impl BackgroundRepeatSystem {
                 .get_mut_or_default(new_section)
                 .map(|transform| {
                     transform.translation_mut().y = y_pos;
-                    *transform.scale_mut() *= 3.0;
+                    *transform.scale_mut() *= 19.0;
                 })
                 .unwrap_or_else(|| panic!("Couldn't update the translation"));
         }
@@ -181,8 +181,8 @@ impl BackgroundRepeatSystem {
         if player_position.y - min_height < BACKGROUND_HEIGHT {
             let y_pos = min_height - BACKGROUND_HEIGHT;
             let sprite_render = spritesheet_registry
-                .find_sprite_sans_world(&*spritesheet_storage, "BG", 0)
-                .unwrap_or_else(|| panic!("Couldn't find spritesheet BG"));
+                .find_sprite_sans_world(&*spritesheet_storage, "background", 0)
+                .unwrap_or_else(|| panic!("Couldn't find spritesheet background"));
             let background_prefab = prefab_registry
                 .find_sans_world("background")
                 .expect("Couldn't find background prefab");
@@ -195,7 +195,7 @@ impl BackgroundRepeatSystem {
                 .get_mut_or_default(new_section)
                 .map(|transform| {
                     transform.translation_mut().y = y_pos;
-                    *transform.scale_mut() *= 3.0;
+                    *transform.scale_mut() *= 19.0;
                 })
                 .unwrap_or_else(|| panic!("Couldn't update the translation"));
         }

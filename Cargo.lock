@@ -1259,6 +1259,7 @@ dependencies = [
  "log",
  "nalgebra",
  "serde",
+ "shrev",
 ]
 
 [[package]]

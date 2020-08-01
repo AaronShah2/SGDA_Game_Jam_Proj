@@ -71,3 +71,6 @@ impl HighScore {
 pub struct GameplayScoreDisplay {
     pub displays: Vec<Entity>,
 }
+
+#[derive(Debug, Default)]
+pub struct CollisionEvent;

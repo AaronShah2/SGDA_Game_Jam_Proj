@@ -1,12 +1,13 @@
 use crate::{
     components::{Enemy, Player},
-    resources::Paused,
+    resources::{CollisionEvent, Paused},
 };
 use amethyst::{
     core::Transform,
     derive::SystemDesc,
-    ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, SystemData, Write, WriteStorage},
 };
+use shrev::EventChannel;
 
 #[derive(SystemDesc)]
 pub struct EnemyMovementSystem;
@@ -48,14 +49,19 @@ const COLLISION_RADIUS: f32 = 9.0;
 pub struct EnemyCollisionSystem;
 
 impl<'s> System<'s> for EnemyCollisionSystem {
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadStorage<'s, Transform>,
         ReadStorage<'s, Player>,
         ReadStorage<'s, Enemy>,
         Read<'s, Paused>,
+        Write<'s, EventChannel<CollisionEvent>>,
     );
 
-    fn run(&mut self, (transforms, players, enemies, paused): Self::SystemData) {
+    fn run(
+        &mut self,
+        (transforms, players, enemies, paused, mut collision_channel): Self::SystemData,
+    ) {
         if *paused == Paused::Paused {
             return;
         }
@@ -71,6 +77,7 @@ impl<'s> System<'s> for EnemyCollisionSystem {
                 <= COLLISION_RADIUS
             {
                 log::info!("Collision between player and enemy");
+                collision_channel.single_write(CollisionEvent);
             }
         }
     }

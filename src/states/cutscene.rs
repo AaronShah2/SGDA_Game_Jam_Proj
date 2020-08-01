@@ -91,10 +91,9 @@ impl SimpleState for CutsceneState {
 impl CutsceneState {
     /// Despawn all entities produced by this
     fn deinit_entities(&mut self, world: &mut World) {
-        for entity in &self.entites {
-            utils::delete_hierarchy(world, *entity);
+        for entity in self.entites.drain(..) {
+            utils::delete_hierarchy(world, entity);
         }
-        self.entites.clear();
     }
 
     /// Display a new line of IRC

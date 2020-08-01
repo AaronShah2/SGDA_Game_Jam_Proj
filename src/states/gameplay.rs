@@ -3,16 +3,17 @@ use crate::{
     resources::{
         prefabs::{CharacterPrefabRegistry, ObstaclePrefabRegistry, UiPrefabRegistry},
         sprites::SpriteSheetRegister,
-        GameplayScoreDisplay, HighScore, QuitToMenu, ResourceRegistry,
+        CollisionEvent, GameplayScoreDisplay, HighScore, QuitToMenu, ResourceRegistry,
     },
-    states::PauseState,
+    states::{GameOverState, PauseState},
     utils::delete_hierarchy,
 };
 use amethyst::{
-    ecs::Entity,
+    ecs::{Entity, Read},
     input::{get_key, is_close_requested, is_key_down, VirtualKeyCode},
     prelude::*,
 };
+use shrev::{EventChannel, ReaderId};
 
 /// Testing game state
 #[derive(Default)]
@@ -20,6 +21,7 @@ pub struct GameplayState {
     player: Option<Entity>,
     enemy: Option<Entity>,
     score: Option<Entity>,
+    reader: Option<ReaderId<CollisionEvent>>,
 
     // to be deleted
     mud: Option<Entity>,
@@ -38,6 +40,11 @@ impl SimpleState for GameplayState {
         self.init_player(data.world);
         self.init_enemy(data.world);
         self.init_score(data.world);
+        self.reader = Some(
+            data.world
+                .fetch_mut::<EventChannel<CollisionEvent>>()
+                .register_reader(),
+        );
 
         //TO BE DELETED
         //self.init_mud(data.world);
@@ -50,6 +57,22 @@ impl SimpleState for GameplayState {
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.deinit_sprites(&mut data.world);
+        self.reader = None
+    }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        data.world
+            .exec(|collision_channel: Read<EventChannel<CollisionEvent>>| {
+                if collision_channel
+                    .read(self.reader.as_mut().unwrap())
+                    .next()
+                    .is_some()
+                {
+                    Trans::Switch(Box::new(GameOverState::default()))
+                } else {
+                    Trans::None
+                }
+            })
     }
 
     /// The following events are handled:

@@ -1,3 +1,4 @@
+pub mod audio;
 mod controls;
 pub mod prefabs;
 pub mod sprites;

@@ -31,14 +31,14 @@ impl<'s> System<'s> for PlayerSystem {
         }
         // finds car area & location
         let mut car_x_min = 0.0f32;
-        let mut car_x_max= 0.0f32;
-        let mut car_y_min= 0.0f32;
-        let mut car_y_max= 0.0f32;
+        let mut car_x_max = 0.0f32;
+        let mut car_y_min = 0.0f32;
+        let mut car_y_max = 0.0f32;
         for (car, transform) in (&cars, &mut transforms).join() {
-            car_x_min = transform.translation().x - (car.width*1.1);
-            car_x_max = transform.translation().x + (car.width*1.1);
-            car_y_min = transform.translation().y - (car.height*1.1);
-            car_y_max = transform.translation().y + (car.height*1.1);
+            car_x_min = transform.translation().x - (car.width * 1.1);
+            car_x_max = transform.translation().x + (car.width * 1.1);
+            car_y_min = transform.translation().y - (car.height * 1.1);
+            car_y_max = transform.translation().y + (car.height * 1.1);
         }
         for (player, transform) in (&players, &mut transforms).join() {
             // unwraps elements from inputs.ron
@@ -53,13 +53,12 @@ impl<'s> System<'s> for PlayerSystem {
                     transform.prepend_translation(movement.normalize() * (player.speed));
                 } else {
                     // moves player back if they are in a car
-                    while 
-                        transform.translation().x > car_x_min &&
-                        transform.translation().x < car_x_max &&
-                        transform.translation().y > car_y_min &&
-                        transform.translation().y < car_y_max
+                    while transform.translation().x > car_x_min
+                        && transform.translation().x < car_x_max
+                        && transform.translation().y > car_y_min
+                        && transform.translation().y < car_y_max
                     {
-                        transform.prepend_translation(-(movement.normalize()*(player.speed)));
+                        transform.prepend_translation(-(movement.normalize() * (player.speed)));
                     }
                 }
 

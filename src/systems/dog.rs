@@ -1,6 +1,6 @@
 // dog obj that stops player and enemy
 use crate::{
-    components::{Dog, Player, Enemy},
+    components::{Dog, Enemy, Player},
     resources::Paused,
 };
 use amethyst::{
@@ -10,7 +10,6 @@ use amethyst::{
 };
 use nalgebra::base::Vector3;
 
-const ROTATION_ANGLE: f32 = 3.14f32;
 // lets dog move left and right
 const AREA_WIDTH: f32 = 760.0f32;
 #[derive(SystemDesc)]
@@ -32,27 +31,22 @@ impl<'s> System<'s> for DogSystem {
             let movement = Vector3::new(-1.0, 0.0, 0.0f32);
 
             // Turns dog around if it hits wall
-            if transform.translation().x >= AREA_WIDTH
-            {
+            if transform.translation().x >= AREA_WIDTH {
                 transform.set_rotation_y_axis(0.0f32);
             }
-            if transform.translation().x <= -(AREA_WIDTH)
-            {
-                transform.set_rotation_y_axis(ROTATION_ANGLE);
+            if transform.translation().x <= -(AREA_WIDTH) {
+                transform.set_rotation_y_axis(std::f32::consts::PI);
             }
-            
+
             // moves dog diff direction depending on angle
-            if transform.rotation().angle() == 0.0
-            {
+            if transform.rotation().angle() == 0.0 {
                 transform.prepend_translation(movement.normalize() * (dog.speed));
-            }
-            else
-            {
+            } else {
                 transform.prepend_translation(-(movement.normalize()) * (dog.speed));
             }
             // sets area boundaries
             transform.translation_mut().x =
-            transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
+                transform.translation().x.max(-AREA_WIDTH).min(AREA_WIDTH);
         }
     }
 }
@@ -62,7 +56,7 @@ impl<'s> System<'s> for DogSystem {
 pub struct DogCollisionSystem;
 
 impl<'s> System<'s> for DogCollisionSystem {
-#[allow(clippy::type_complexity)]
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Dog>,
@@ -75,7 +69,7 @@ impl<'s> System<'s> for DogCollisionSystem {
             return;
         }
         for (dog, dog_transform) in (&mut dogs, &transforms).join() {
-            for (player, player_transform) in (&players, &transforms).join() {
+            for (_, player_transform) in (&players, &transforms).join() {
                 // log::info!("player_coor: {}, dog_coor: {}",
                 // player_transform.translation(), dog_transform.translation());
 
@@ -91,7 +85,7 @@ impl<'s> System<'s> for DogCollisionSystem {
                     dog.is_player_touching = false;
                 }
             }
-            for (enemy, enemy_transform) in (&enemies, &transforms).join() {
+            for (_, enemy_transform) in (&enemies, &transforms).join() {
                 // log::info!("player_coor: {}, dog_coor: {}",
                 // player_transform.translation(), dog_transform.translation());
 
@@ -116,7 +110,7 @@ impl<'s> System<'s> for DogCollisionSystem {
 pub struct DogAttackSystem;
 
 impl<'s> System<'s> for DogAttackSystem {
-#[allow(clippy::type_complexity)]
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadStorage<'s, Dog>,
         WriteStorage<'s, Player>,
@@ -131,23 +125,15 @@ impl<'s> System<'s> for DogAttackSystem {
             for (player,) in (&mut players,).join() {
                 if dog.is_player_touching {
                     player.stop();
-                }
-                else 
-                {
-                    if player.speed == 0.0 {
-                        player.normal_speed();
-                    }
+                } else if player.speed == 0.0 {
+                    player.normal_speed();
                 }
             }
             for (enemy,) in (&mut enemies,).join() {
                 if dog.is_enemy_touching {
                     enemy.stop();
-                }
-                else 
-                {
-                    if enemy.speed == 0.0 {
-                        enemy.normal_speed();
-                    }
+                } else if enemy.speed == 0.0 {
+                    enemy.normal_speed();
                 }
             }
         }

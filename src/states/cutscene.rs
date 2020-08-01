@@ -150,8 +150,14 @@ impl CutsceneState {
                 }
             })
             .count();
-        let prefab_storage = data.world.read_resource::<amethyst::assets::AssetStorage<amethyst::ui::UiPrefab>>();
+        let prefab_storage = data
+            .world
+            .read_resource::<amethyst::assets::AssetStorage<amethyst::ui::UiPrefab>>();
         let prefab = prefab_storage.get(&prefab).unwrap();
-        log::info!("Set up an IRC row with {} entities from prefab: {:?}", num_descendants, prefab.entities().collect::<Vec<_>>());
+        log::info!(
+            "Set up an IRC row with {} entities from prefab: {:?}",
+            num_descendants,
+            prefab.entities().collect::<Vec<_>>()
+        );
     }
 }

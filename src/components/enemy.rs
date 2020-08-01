@@ -34,8 +34,7 @@ impl Enemy {
     }
 
     //Stops enemy
-    pub fn stop(&mut self)
-    {
+    pub fn stop(&mut self) {
         self.speed = 0.0f32;
     }
 

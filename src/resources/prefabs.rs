@@ -181,6 +181,24 @@ impl<'a> PrefabData<'a> for CarPrefab {
     }
 }
 
+#[derive(Copy, Clone, Debug, Default, Deserialize, Serialize)]
+pub struct DogPrefab;
+impl<'a> PrefabData<'a> for DogPrefab {
+    type SystemData = WriteStorage<'a, Dog>;
+    type Result = ();
+
+    fn add_to_entity(
+        &self,
+        entity: Entity,
+        enemies: &mut Self::SystemData,
+        _entities: &[Entity],
+        _children: &[Entity],
+    ) -> Result<Self::Result, Error> {
+        enemies.insert(entity, Dog::default())?;
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PrefabData, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CharacterPrefab {
@@ -240,6 +258,8 @@ pub struct ObstaclePrefab {
     mudposition: Option<TransformAdapterPrefab>,
     car: Option<CarPrefab>,
     carposition: Option<TransformAdapterPrefab>,
+    dog: Option<DogPrefab>,
+    dogposition: Option<TransformAdapterPrefab>,
 }
 
 #[derive(Default)]

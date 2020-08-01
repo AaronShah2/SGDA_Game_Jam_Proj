@@ -11,12 +11,14 @@ mod car;
 mod enemy;
 mod mud;
 mod player;
+mod dog;
 
 pub use background::Background;
 pub use car::Car;
 pub use enemy::Enemy;
 pub use mud::Mud;
 pub use player::Player;
+pub use dog::Dog;
 
 // #[derive(Copy, Clone, Debug, Default, Deserialize, PrefabData, Serialize)]
 // #[prefab(Component)]

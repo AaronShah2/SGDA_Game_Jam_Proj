@@ -32,6 +32,12 @@ impl Player {
         self.speed = 20.0f32;
     }
 
+    //Stops player
+    pub fn stop(&mut self)
+    {
+        self.speed = 0.0f32;
+    }
+
     pub fn new() -> Self {
         Player {
             speed: 10.0f32,

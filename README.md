@@ -7,9 +7,22 @@ Project built for 2020 SGDA Game Jam.
 
 ## Installation
 
+You can download a copy of this game from [our itch.io page](https://dready2k.itch.io/stranger-danger)
+or you can build it from source, with the following instructions.
+
+## Building from Source
+
 1. Installing Amethyst
 
     Follow this installation guide: https://book.amethyst.rs/stable/getting-started.html
+
+2. Clone the repository
+
+    Run `git clone https://github.com/AaronShah2/SGDA_Game_Jam_Proj.git`
+
+3. Build the game
+
+    Navigate to the repository's directory and type the command `cargo run --release`.
 
 # Credits
 - Jarred Allen - Programmer

@@ -1,9 +1,14 @@
 # Stranger Danger
-Sometimes, the people you meet online aren't as nice as they seem...
-
-Play as a young kid who met up with his online friend and now needs to RUN!
+Sometimes, the people you meet online aren't as nice as they seem... Play as a young kid who met up
+with his online friend and now needs to RUN! And also dodge cars, dogs, and piles of mud!
 
 Project built for 2020 SGDA Game Jam.
+
+Credits:
+
+Made by Aaron Shah, Jarred Allen, Ming-Wei Hung, and Anke Shao
+
+We used the Amethyst game engine to make our game.
 
 ## Installation
 
